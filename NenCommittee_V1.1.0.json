@@ -9,6 +9,8 @@
     "- The 'committeeName' property has been changed from a string to an array of objects to accommodate multiple local names in different languages.",
     "- The 'committeeMembers' property has been added to include a list of committee members, each conforming to the 'NenCommitteeMember_V1.1.0.json' schema.",
     "- The properties are strongly typed with specific formats and constraints to ensure data integrity.",
+    "- The 'mutationType' property is deprecated and should be removed from the CDM.",
+    "- Renamed ...Date attributes into ...At to align with common naming conventions for timestamps.",
     "Last modified on 2026-02-18 by Hans Bot - NEN"
     ],
   
@@ -18,7 +20,9 @@
   "properties": {
     "committeeId": {
         "type": "string",
-        "example": "341013"
+        "example": "nen:committee:341013",
+        "format": "uri",
+        "description": "Unique identifier for the committee, typically in the format 'organization:committee:uniqueId'."
     },
     "committeeName": {
         "type": "array",
@@ -59,61 +63,87 @@
     "mutationType": {
         "type": "string",
         "enum": ["Add", "Modify", "Delete"],
-        "deprecated": true    },
+        "deprecated": true,
         "description": "Type of mutation applied to the committee record does not belong to the canonical data. This property is deprecated and should not be used in new implementations."
-    "organization": {               
-        "type": "string"
+    },
+    "organization": {              
+        "type": "string",
+        "examples": ["NEN", "ISO", "CEN", "CENELEC", "IEC"],
+        "description": "Organization that governs the committee"
     },
     "umbrellaStructure": {
-        "type": "string"
+        "type": "string",
+        "description": "possibly the committee in HAPI parlance",
+        "examples": []
     },
     "mainStructure": {
-        "type": "string"
+        "type": "string",
+        "description": "possibly the subcommittee in HAPI parlance"
     },
     "subStructure": {
-        "type": "string"
+        "type": "string",
+        "description": "possibly the working group in HAPI parlance"
     },
     "externalCommittee": {
-        "type": "boolean"
+        "type": "boolean",
+        "description": "Indicates whether the committee is external to NEN (true) or NEN internal (false).",
+        "$comment": "consider renaming into a more positive 'NenCommittee'"
     },
     "costCenter": {
-        "type": "string"
+        "type": "string",
+        "comment": "is this relevant outside the business administration domain? If so, we need to define the format and semantics of this property."
     },
     "costCenterDescription": {
-        "type": "string"
+        "type": "string",
+        "$comment": "reads like a compound object with a number and a description"
     },
     "committeeType": {
-        "type": "string"
+        "type": "string",
+        "description": "possibly hapi:field, with the enumerated values TECHNICAL, POLICY, GOVERNANCE, EXTERNAL, NONTECHNICAL."
     },
     "instituteType": {
-        "type": "string"
+        "type": "string",
+        "description": "possibly hapi:technicalSector, expressing expresses the business area the committee is active in"
     },
     "active": {
-        "type": "boolean"
+        "type": "boolean",
+        "description": "Please note that the indication 'active' is not always consistent with the terminatedAt value",
+        "$comment": "possibly replace with a richer status attribute [inactive, active, terminated] or similar"
     },
-    "creationDate": {
+    "createdAt": {
         "type": "string",
         "format": "date-time",
         "example": "2024-01-01T12:00:00Z",
-        "description": "The date and time when the committee was created.",
+        "description": "The date and time when the committee was created. Date must be in the past",
         "regex": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
     },
-    "endDate": {
+    "terminatedAt": {
         "type": "string",
-        "format": "date-time"
+        "format": "date-time",
+        "example": "2024-01-01T12:00:00Z",
+        "description": "The date and time when the committee was decommissioned.",
+        "regex": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
     },
-    "mutationDate": {
+    "updatedAt": {
         "type": "string",
-        "format": "date-time"
+        "format": "date-time",
+        "example": "2024-01-01T12:00:00Z",
+        "description": "The date and time when the committee was last updated.",
+        "regex": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+
     },
+
     "personId": {
-        "type": "string"
+        "type": "string",
+        "$comment": "a person as a property of a commission seems strange. Possibly replace with the more specific 'consultant'"
     },
     "userId": {
-        "type": "string"
+        "type": "string",
+        "$comment": "'user' is probably a misnomer"
     },
     "liveLink": {
-        "type": "boolean"
+        "type": "boolean",
+        "description": "no clue"
     },
     "contextValue": {
         "type": "string"
@@ -122,14 +152,14 @@
         "description": "List of committee members",
         "type": "array",
         "items": {
-            "$ref": https://json-schema.nen.nl/canonicalData/NenCommittee_V1.1.0.json
+            "$ref": "https://raw.githubusercontent.com/hansbot/NEN-CDM/main/NenCommitteeMember_V1.1.0.json"
         }
     }
     
-    },
-    "required": [
-        "committeeId",
-        "committeeNameNl"
-    ],
-    "additionalProperties": false
+  },
+  "required": [
+    "committeeId",
+    "committeeName"
+  ],
+  "additionalProperties": false
 }
