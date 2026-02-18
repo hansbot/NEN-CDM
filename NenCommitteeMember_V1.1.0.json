@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema#",
+  "description": "Schema for NEN CommitteeMember",
+  "title": "CommitteeMember",
+  "version": "1.1.0",
+  "$comment": [
+    "Last modified on 2026-02-18 by Hans Bot - NEN",
+    "Please note the following changes from V1.0.0 to V1.1.0:",
+    "- The YAML has been converted to JSON format to align with the standard JSON Schema format.",
+    "- The properties are strongly typed with specific formats and constraints to ensure data integrity.",
+    "- The 'memberId' property has been added as a unique identifier for each committee member, typically using a UUID or similar format.",
+    "- The 'gender' now has a default value of 'N' for unknown and is no longer mandatory", 
+    "- 'salutation' property has been added as an optional field to provide a salutation for the committee member, which can be used for gender identification such as Ms, Mr., etc.",
+    "- 'title' property has been added to include the title of the person, which can be used for academic, corporate, or military titles such as Dr. Eng., MD, BSc, etc.",
+    "- 'telephoneNumber' property has been added to include the telephone number of the committee member, which can be used for communication purposes. The telephone number is validated against a pattern to ensure it is in a valid format, allowing for international formats with optional country codes and separators.",
+    "Additionally, consider including a generic person schema in the future to harmonize identities across different schemas, which could include common properties such as 'personalEmail', 'firstName', 'lastName', etc., to ensure consistency and interoperability across various datasets and applications."
+  ],
+  "type": "object",
+  "properties": {
+    "memberId": {
+      "description": "Unique identifier for the committee member, typically a UUID or similar.",
+      "$ref": "#/definitions/iddef",
+      "examples": [
+        "A234-1234-1234"
+      ]
+    },
+    "lastName": {
+      "description": "The last name or surname of the committee member.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "examples": [
+        "Rooijakkers", "Kenters"
+      ]
+    },
+    "initials": {
+      "description": "The initials of the committee member, if applicable.",
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 12,
+      "examples": [
+        "H.A.F.M.O"
+      ]
+    },
+    "firstName": {
+      "description": "The first name or given name of the committee member.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "examples": [
+        "Els", "Nikki"
+      ]
+    },
+    "gender": {
+      "description": "M = Male, F = Female, X = Other, N = Unknown",
+      "type": "string",
+      "enum": ["M", "F", "X", "N"],
+      "default": "N",
+      "examples": [
+        "F"
+      ]
+    }, 
+    "emailAddress": {
+      "description": "The email address of the committee member, used for communication purposes.",
+      "$comment": "conform harmonized identities: personalEmail",
+      "type": "string",
+      "format": "email",
+      "examples": [
+        "voornaam.achternaam@nen.nl"
+      ],
+      "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$" 
+    },
+    "memberRole": {
+      "description": "The role of the committee member within the NEN committee, such as 'Chair', 'Secretary', 'Member', etc.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "examples": [
+        "Chair", "Secretary", "Member"
+      ]
+    },
+    "salutation": {
+      "description": "Salutation, optional, used for gender identification such as Ms, Mr.",
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 12,
+      "examples": [
+        "Ms", "Dhr", "Zkh"
+      ]
+    },
+    "title": {
+      "description": "Title of person, used for academic, corporations or military titles, etc. Dr. Eng., MD, BSc, etc.",
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 32,
+      "examples": [
+        "Dr. Eng.", "MD", "BSc"
+      ]
+    },
+    "telephoneNumber": {
+      "description": "The telephone number of the committee member, used for communication purposes.",
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 32,
+      "examples": [
+        "+31-6-12345678", "015-2690390"
+      ],
+      "pattern": "^\\+?[0-9\\-\\s]+$" 
+    } 
+  },
+  "required": [
+    "memberId",
+    "lastName",
+    "firstName",
+    "emailAddress",
+    "memberRole"
+  ],
+  "definitions": {
+    "iddef":
+  },
+  "additionalProperties": false
+}

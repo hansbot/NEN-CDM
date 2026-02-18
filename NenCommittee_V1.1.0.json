@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema#",
+  "$id": "https://json-schema.nen.nl/canonicalData/NenCommittee_V1.1.0.json",
+  "title": "Committee",
+  "$comment": [
+    "Please note the following changes from V1.0.0 to V1.1.0:",
+    "- The YAML has been converted to JSON format to align with the standard JSON Schema format.",
+    "- The YAML has been converted to JSON format to align with the standard JSON Schema format.",
+    "- The 'committeeName' property has been changed from a string to an array of objects to accommodate multiple local names in different languages.",
+    "- The 'committeeMembers' property has been added to include a list of committee members, each conforming to the 'NenCommitteeMember_V1.1.0.json' schema.",
+    "- The properties are strongly typed with specific formats and constraints to ensure data integrity.",
+    "Last modified on 2026-02-18 by Hans Bot - NEN"
+    ],
+  
+  "description": "Schema for NEN Committee",
+  "type": "object",
+  "version": "1.1.0",
+  "properties": {
+    "committeeId": {
+        "type": "string",
+        "example": "341013"
+    },
+    "committeeName": {
+        "type": "array",
+        "items": {
+            "localNames": {
+                "type": "object",
+                "properties": {
+                    "language": {
+                        "type": "string",
+                        "examples": ["nl", "en"],
+                        "description": "The iso language code for the committee name (in lower case).",  
+                        "minLength": 2,
+                        "maxLength": 2,
+                        "pattern": "^[a-z]{2}$"
+                    },
+                    "localName": {
+                        "type": "string",
+                        "example": "Sterk Betonconstructies"
+                    }
+                }
+            },
+            "minItems": 1,
+            "maxItems": 9,
+            "uniqueItems": true,
+            "description": "List of local names for the committee in different languages. Each entry includes the language code and the corresponding local name."
+        }   
+    },
+    "committeeNameNl": {
+        "type": "string",
+        "example": "Sterk Betonconstructies",
+        "deprecated": true
+    },
+    "committeeNameEn": {
+        "type": "string",
+        "example": "Strong Concrete Structures",
+        "deprecated": true
+    },
+    "mutationType": {
+        "type": "string",
+        "enum": ["Add", "Modify", "Delete"],
+        "deprecated": true    },
+        "description": "Type of mutation applied to the committee record does not belong to the canonical data. This property is deprecated and should not be used in new implementations."
+    "organization": {               
+        "type": "string"
+    },
+    "umbrellaStructure": {
+        "type": "string"
+    },
+    "mainStructure": {
+        "type": "string"
+    },
+    "subStructure": {
+        "type": "string"
+    },
+    "externalCommittee": {
+        "type": "boolean"
+    },
+    "costCenter": {
+        "type": "string"
+    },
+    "costCenterDescription": {
+        "type": "string"
+    },
+    "committeeType": {
+        "type": "string"
+    },
+    "instituteType": {
+        "type": "string"
+    },
+    "active": {
+        "type": "boolean"
+    },
+    "creationDate": {
+        "type": "string",
+        "format": "date-time",
+        "example": "2024-01-01T12:00:00Z",
+        "description": "The date and time when the committee was created.",
+        "regex": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+    },
+    "endDate": {
+        "type": "string",
+        "format": "date-time"
+    },
+    "mutationDate": {
+        "type": "string",
+        "format": "date-time"
+    },
+    "personId": {
+        "type": "string"
+    },
+    "userId": {
+        "type": "string"
+    },
+    "liveLink": {
+        "type": "boolean"
+    },
+    "contextValue": {
+        "type": "string"
+    },
+    "committeeMembers": {
+        "description": "List of committee members",
+        "type": "array",
+        "items": {
+            "$ref": https://json-schema.nen.nl/canonicalData/NenCommittee_V1.1.0.json
+        }
+    }
+    
+    },
+    "required": [
+        "committeeId",
+        "committeeNameNl"
+    ],
+    "additionalProperties": false
+}
