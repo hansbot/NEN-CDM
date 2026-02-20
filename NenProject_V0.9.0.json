@@ -1,0 +1,260 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema#",
+  "description": "Schema for NEN Project details",
+  "title": "NenProject",
+  "version": "0.9.0",
+  "$comment": "Last modified on 2026-02-20 by Hans Bot - NEN. Derived from 'NEN Content Publication V0.8.1-bundled.yaml'",
+  "type": "object",
+  "properties": {
+    "nenProjectId": {
+      "description": "Unique identifier for the NEN project.",
+      "type": "integer",
+      "examples": [
+        12345
+      ],
+      "minimum": 1,
+      "exclusiveMaximum": 1000000
+    },
+    "nenProjectReference": {  
+      "description": "Reference code or name for the NEN project.",
+      "type": "string",
+      "maxLength": 96,
+      "examples": [
+        "NEN-Project-2026"
+      ],
+      "minLength": 1
+    },
+    "nenProjectURN": {
+      "$comment": "copied from 'cen-publications.yaml'.",
+      "description": "URN for the NEN project, following a specific format (i.e. urn:nen:project:12345).",
+      "type": "string",
+      "pattern": "^urn:nen:project:[0-9]+$",
+      "examples": [
+        "urn:nen:project:12345"
+      ],
+      "maxLength": 256
+    },
+    "lastChangeTimestamp": {
+      "$comment": "copied from 'cen-publications.yaml'. Personally prefer 'changeAt' for date-time properties, but keeping 'lastChangeTimestamp' for consistency with existing schemas.",
+      "description": "lastChangeTimestamp from at (i.e. 2018-01-01), Cannot be a date in the future.",
+      "type": "string",
+      "format": "date-time",
+      "examples": [
+        "2018-01-01T00:00:00Z"
+      ]
+    },
+    "reference": {
+      "$comment": "copied from 'cen-publications.yaml'.",
+      "description": "project's reference, exact match. This can be a code or name that uniquely identifies the project, and may include alphanumeric characters and special characters such as hyphens or underscores. (i.e. NEN-Project-2026, NEN-Project-54321).",
+      "type": "string",
+      "examples": [
+        "NEN-Project-2026", "NEN-Project-54321"
+      ],
+      "pattern": "^[NEN-Project-]+[A-Za-z0-9_-]+$",
+      "maxLength": 96
+    },
+    "stdNumber": {
+      "$comment": "copied from 'cen-publications.yaml'.",
+      "description": "project's standard or document 'number', which may also contain non-numeric characters, e.g. '9001'",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 18,
+      "examples": [
+        "9001", "9001A"
+      ]
+    },
+    "stdPartNumber": {
+      "$comment": "copied from 'cen-publications.yaml'.",
+      "description": "project's standard or document part 'number', which may also contain non-numeric characters, e.g. '2B'",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 18,
+      "examples": [
+        "2B"
+      ]
+    },
+    "stage": {
+        "oneOf": [
+            {
+                "harmonizedStageCode": {
+                    "$comment": "copied from 'cen-publications.yaml'.",
+                    "description": "harmonizedStageCode (i.e. 60.60) cannot be used with stageCode. This will match any 'CURRENT' stage, not a 'CLOSED' stage.",
+                    "type": "string",
+                    "examples": [
+                        "00.60.0000", "40.97.0009", "90.00.0000"
+                    ],
+                    "pattern": "^[0-9]{2}\\.[0-9]{2}\\.[0-9]{4}$"
+                }
+            },
+            {
+                "stageCode": {
+                    "type": "string",
+                    "$comment": "copied from 'cen-publications.yaml'.",
+                    "description": "stageCode (i.e. 6060) cannot be used with harmonizedStageCode",
+                    "examples": [
+                        "6060"
+                    ],
+                    "pattern": "^[0-9]{4}$"
+                }
+            }
+        ]
+    },
+    "stageDueDateFrom": {
+      "$comment": "copied from 'cen-publications.yaml'.",
+      "description": "stage dueDate From for PLANNED status (i.e. 2018-01-01)",
+      "type": "string",
+      "format": "date",
+      "examples": [
+        "2018-01-01"
+      ]
+    },
+    "stageDueDateTo": {
+      "$comment": "copied from 'cen-publications.yaml'.",
+      "description": "stage dueDate To for PLANNED status(i.e. 2018-05-31)",
+      "type": "string",
+      "format": "date",
+      "examples": [
+        "2018-05-31"
+      ]
+    },
+    "stageEffectiveDateFrom": {
+      "$comment": "copied from 'cen-publications.yaml'.",
+      "description": "stage effectiveDate starting with status default CURRENT starting at (i.e. 2018-01-01)",
+      "type": "string",
+      "format": "date",
+      "examples": [
+        "2018-01-01"
+      ]
+    },
+    "stageEffectiveDateTo": {
+      "$comment": "copied from 'cen-publications.yaml'.",
+      "description": "stage effectiveDate ending with status default CURRENT ending at (i.e. 2018-05-31)",
+      "type": "string",
+      "format": "date",
+      "examples": [
+        "2018-05-31"
+      ]
+    },
+    "stageStatus": {
+      "$comment": "copied from 'cen-publications.yaml'.",
+      "description": "stage status (values CURRENT, CLOSED, PLANNED), default CURRENT when a stage (effective, due, target) date is filled else empty",
+      "type": "string",
+      "enum": [
+        "CLOSED",
+        "CURRENT",
+        "PLANNED"
+      ]
+    },
+    "stageTargetDateFrom": {
+      "$comment": "copied from 'cen-publications.yaml'.",
+      "description": "stage targetDate From for PLANNED status(i.e. 2018-01-31)",
+      "type": "string",
+      "format": "date",
+      "examples": [
+        "2018-01-31"
+      ]
+    },
+    "stageTargetDateTo": {
+      "$comment": "copied from 'cen-publications.yaml'.",
+      "description": "stage targetDate To for PLANNED status(i.e. 2018-05-31)",
+      "type": "string",
+      "format": "date",
+      "examples": [
+        "2018-05-31"
+      ]
+    },
+    "nenCommitteeUrn": {
+      "description": "URN for the NEN committee associated with the project, following a specific format (i.e. committeeUrn=iso:committee:54158&committeeUrn=iso:committee:48138&committeeUrn=iso:committee:4559).",
+      "type": "string",
+      "pattern": "^urn:nen:committee:[0-9]+$",
+      "$comment": "copied from 'cen-publications.yaml'. pattern not consistent with description",
+      "examples": [
+        "urn:nen:committee:12345"
+      ]
+    },
+    "nenCommitteeDisplayName": {
+      "description": "Display name of the NEN committee associated with the project.",
+      "$comment": "copied from 'cen-publications.yaml'. Prefer array instead.",
+      "type": "string",
+      "maxLength": 256,
+      "examples": [
+        "ISO/TC 22&ISO/TC 61/SC 12"
+      ]
+    },
+    "nenProjectRelationType": {
+      "description": "project relation type, exact 'value'. (i.e. projectRelationType=ADOPTED_FROM&projectRelationType=JOINED_WORK_ITEM&projectRelationType=VIENNA_AGREEMENT)",
+      "type": "array",
+        "items": {
+          "type": "string"
+        },
+       "examples": [
+        "ADOPTED_FROM", "JOINED_WORK_ITEM", "VIENNA_AGREEMENT"
+       ]
+    },
+    "externalProjectId": {
+      "description": "externalProjectId (i.e. iso:proj:21494)",
+      "$comment": "copied from 'cen-publications.yaml'.",
+      "type": "string",
+      "examples": [
+        "iso:proj:21494"
+      ]
+    },
+    "mandateUrn": {
+      "description": "Mandate urn, exact 'value'. (i.e. mandateUrn=cen:mandate:26)",
+      "$comment": "copied from 'cen-publications.yaml'.",
+      "type": "string",
+      "examples": [
+        "cen:mandate:26"
+      ]
+    },
+    "mandateReference": {
+      "description": "Mandate reference, exact 'value'. (i.e. mandateReference=M/396)",
+      "$comment": "copied from 'cen-publications.yaml'.",
+      "type": "string",
+      "examples": [
+        "M/396"
+      ]
+    },
+    "directiveUrn": {
+      "description": "Directive urn, exact 'value'. (i.e. directiveUrn=cen:directive:5218)",
+      "$comment": "copied from 'cen-publications.yaml'.",
+      "type": "string",
+      "examples": [
+        "cen:directive:5218"
+      ]
+    },
+    "directiveReference": {
+      "description": "Direct reference, exact 'value'. (i.e. directiveReference=2014/68/EU)",
+      "$comment": "copied from 'cen-publications.yaml'.",
+      "type": "string",
+      "examples": [
+        "2014/68/EU"
+      ]
+    }
+  }
+}
+
+  "$comment": "The following properties were defined in the NEN Content Publication API V0.8.1-bundled.yaml'."
+  "type": "array",
+    "items": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "nenProjectId": {
+          "description": "Unique identifier for the NEN project.",
+          "type": "integer",
+          "examples": [
+            12345
+          ]
+        },
+        "nenProjectReference": {
+          "description": "Reference code or name for the NEN project.",
+          "type": "string",
+          "maxLength": 96,
+          "examples": [
+            "NEN-Project-2026"
+          ]
+        }
+      }
+    }
+
