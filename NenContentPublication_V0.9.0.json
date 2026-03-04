@@ -1,0 +1,440 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema#",
+  "description": "Schema for NEN Content Publication details",
+  "title": "NenPublication",
+  "version": "0.9.0",
+  "$comment": "Last modified on 2026-02-24 by Hans Bot - NEN. Derived from 'NEN Content Publication V0.8.1-bundled.yaml'",
+  "type": "object",
+  "properties": {
+    "nenPublicationId": {
+      "type": "integer",
+      "description": "Unique identifier for the NEN publication.",
+      "examples": [
+        "NEN-7510", "ISO-27002 (2022)"
+      ],
+      "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/138248310/nenPublicationId",
+      "pattern": "^[0-9]6$"
+    },
+    "nenPublicationURN": {
+      "$comment": "copied from 'cen-publications.yaml', ref hapi:docu:003.",
+      "description": "URN for the NEN publication, following a specific format (i.e. urn:nen:publication:NEN-7510). A 'urn' in HAPI is used as primary entity identifier.",
+      "type": "string",
+      "pattern": "^urn:nen:publication:[\\w:_/+-]+$",
+      "examples": [
+        "urn:nen:publication:NEN-7510"
+      ],
+      "maxLength": 256
+    },
+    "nenPublicationType": {
+      "type": "string",
+      "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/174915663/nenPublicationType",
+      "deprecated": true,
+      "minLength": 1,
+      "maxLength": 32,
+      "description": "Type of publication, such as 'Norm', 'Supplement', 'Correction'",
+      "examples": [
+        "Norm", "Corrigendum", "Amendment"
+      ]
+    },
+    "nenAlfrescoId": {
+      "$comment": "Internal reference: ",
+      "type": "integer"
+    },
+    "nenLanguage": {
+      "description": "Primary language of the NEN publication, represented as an ISO 639-1 code (e.g., 'en' for English, 'nl' for Dutch).",
+      "type": "string",
+      "$comment": "Note: multiple languages can be concatenated (separated by semicolon) in one string. Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/141656215/nenLanguage",
+      "pattern": "^[a-z]{2}(;[a-z]{2})*$",
+      "examples": [
+        "de", "en", "es", "fr", "nl", "ru",
+        "de;en;fr"
+      ]
+    },
+    "nenCompensation": {
+      "type": "string",
+      "$comment": "Internal reference https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/138346533/nenCompensation.",
+      "description": "This property indicates an 'afkoopcode'.",
+      "examples": [
+        "EGIS", "hENS"
+      ],
+      "maxLength": 16
+    }
+  },
+  "required": [
+      "nenPublicationId",
+      "nenLanguage"
+  ],
+  "definitions": {
+    "publicationURNs": {
+      "description": "Reference details related to the international publication.",
+      "type": "string",
+      "maxLength": 64,
+      "oneOf":
+        [
+          {
+            "pattern": "^nen:fam:[0-9]{7}+$",
+            "description": "NEN Family URN",
+            "comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/268009511/Value+lists#nenPublicationType"
+          },
+          {
+            "pattern": "^nen:proj:[0-9]{7}+$",
+            "description": "NEN Project URN",
+            "comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/268009511/Value+lists#nenPublicationType"
+          },
+          {
+            "pattern": "^nen:pub:[0-9]{7}+$",
+            "description": "NEN Publication URN",
+            "comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/268009511/Value+lists#nenPublicationType"
+          },
+          {
+            "pattern": "iso:3166:[A-Z]{2}",
+            "description": "ISO 3166 Country Code (e.g., iso:3166:NL)"
+          },
+          {
+            "pattern": "cen:proj:[0-9]+",
+            "description": "Publication Year (e.g., 2022)"
+          },
+          {
+            "pattern": "cen:std:[\\w:_/+-]+",
+            "description": "Publication Number (e.g., 9001)"
+          },
+          {
+            "pattern": "cen:pub:std:[\\w:_/+-]+",
+            "description": "Publication Type (e.g., EN, ISO, etc.)"
+          },
+          {
+            "pattern": "cen:committee:[\\w:_/+-]+",
+            "description": "Committee Name (e.g., CEN/TC 123)"
+          },
+          {
+            "pattern": "cen:winumber:[\\w:_/+-]+",
+            "description": "Work Item Number (e.g., WI 54321)"
+          },
+          {
+            "pattern": "cen:directive:[\\w:_/+-]+",
+            "description": "Directive Number (e.g., Directive 2014/30/EU)"
+          },
+          {
+            "pattern": "cen:mandate:[\\w:_/+-]+",
+            "description": "Mandate Number (e.g., M/123)"
+          },
+          {
+            "pattern": "cen:ballot:.+",
+            "description": "Ballot Identifier (e.g., Ballot 2022-01)"
+          },
+          {
+            "pattern": "cen:sector:[\\w:_/+-]+",
+            "description": "Sector Name (e.g., Construction)"
+          },
+          {
+            "pattern": "cen:domain:[\\w:_/+-]+",
+            "description": "Domain Name (e.g., Energy)"
+          },
+          {
+              "pattern": "cen:doc:.+",
+              "description": "CEN Document Identifier (e.g., CEN Document 2022-01)"
+          },
+          {
+              "pattern": "cenelec:doc:.+",
+              "description": "CENELEC Document Identifier (e.g., CENELEC Document 2022-01)"
+          },
+          {
+              "pattern": "cenelec:proj:[0-9]+",
+              "description": "CENELEC Project Number (e.g., WI 54321)"
+          },
+          {
+              "pattern": "cenelec:pub:std:[\\w:_/+-]+",
+              "description": "CENELEC Publication Type (e.g., EN, HD, etc.)"
+          },
+          {
+              "pattern": "cenelec:committee:[\\w:_/+-]+",
+              "description": "CENELEC Committee Name (e.g., CENELEC TC 123)"
+          },
+          {
+              "pattern": "cenelec:winumber:[\\w:_/+-]+",
+              "description": "CENELEC Work Item Number (e.g., WI 54321)"
+          },
+          {
+              "pattern": "cenelec:directive:[\\w:_/+-]+",
+              "description": "CENELEC Directive Number (e.g., Directive 2014/30/EU)"
+          },
+          {
+              "pattern": "cenelec:mandate:[\\w:_/+-]+",
+              "description": "CENELEC Mandate Number (e.g., M/123)"
+          },
+          {
+              "pattern": "cenelec:ballot:.+",
+              "description": "CENELEC Ballot Identifier (e.g., Ballot 2022-01)"
+          },
+          {
+            "pattern": "^urn:iso:std:[\\w:_/+-]+$",
+            "description": "ISO Standard URN"
+          },
+          {
+            "pattern": "^urn:iso:pub:[\\w:_/+-]+$",
+            "description": "ISO Publication URN"
+          },
+          {
+            "pattern": "^urn:iso:proj:[0-9]+$",
+            "description": "ISO Project Number (e.g., 21494)"
+          },
+          {
+            "pattern": "^urn:iso:ballot:.+$",
+            "description": "ISO Ballot Identifier (e.g., Ballot 2022-01)"
+          },
+          {
+              "pattern": "^urn:iec:org:[\\w:_/+-]+$",
+              "description": "IEC Organization URN"
+          },
+          {
+              "pattern": "^urn:iec:committee:[\\w:_/+-]+$",
+              "description": "IEC Committee URN"
+          },
+          {
+              "pattern": "^urn:iec:country:[\\w:_/+-]+$",
+              "description": "IEC Country URN"
+          },
+          {
+              "pattern": "^urn:iec:person:[\\w:_/+-]+$",
+              "description": "IEC Person URN"
+          },
+          {
+              "pattern": "^urn:iec:proj:[0-9]+$",
+              "description": "IEC Project Number (e.g., 12345)"
+          },
+          {
+              "pattern": "^urn:iec:role:[0-9]+:ipoo$",
+              "description": "IEC Role Identifier for IPOO (e.g., 12345:ipoo)"
+          },
+          {
+              "pattern": "^urn:iec:role:[0-9]+:ibp$",
+              "description": "IEC Role Identifier for IBP (e.g., 12345:ibp)"
+          },
+          {
+              "pattern": "^urn:iec:role:[0-9]+:ioo$",
+              "description": "IEC Role Identifier for IOO (e.g., 12345:ioo)"
+          },
+          {
+              "pattern": "^urn:iec:pub:[0-9]+$",
+              "description": "IEC Publication Number (e.g., 12345)"
+          },
+          {
+              "pattern": "^urn:iec:doc:[\\w:_/+-]+$",
+              "description": "IEC Document URN"
+          },
+          {
+              "pattern": "^urn:iec:meeting:.+$",
+              "description": "IEC Meeting Identifier (e.g., Meeting 2022-01)"
+          },
+          {
+              "pattern": "^urn:iec:ballot:.+$",
+              "description": "IEC Ballot Identifier (e.g., Ballot 2022-01)"
+          },
+          {
+              "pattern": "^urn:iso:committee:[\\w:_/+-]+$",
+              "description": "ISO Committee URN"
+          },
+          {
+              "pattern": "^urn:iso:organization:[\\w:_/+-]+$",
+              "description": "ISO Organization URN"
+          },
+          {
+              "pattern": "^urn:iso:person:[\\w:_/+-]+$",
+              "description": "ISO Person URN"
+          },
+          {
+              "pattern": "^urn:iso:proj:[0-9]+$",
+              "description": "ISO Project Number (e.g., 12345)"
+          },
+          {
+              "pattern": "^urn:iso:role:[0-9]+$",
+              "description": "ISO Role Identifier (e.g., 12345)"
+          },
+          {
+              "pattern": "^urn:iso:doc:[\\w:_/+-]+$",
+              "description": "ISO Document URN"
+          },
+          {
+              "pattern": "^urn:iso:pub:oth:[\\w:_/+-]+$",
+              "description": "ISO Publication URN for marketing or other activities - not standards"
+          },
+          {
+              "pattern": "^urn:iso:pub:std:[\\w]{2,4}:[0-9]+$",
+              "description": "ISO Publication URN resulting from projects and standards (e.g., urn:iso:pub:std:EN:12345)"
+          },
+          {
+              "pattern": "^urn:iso:ballot:.+$",
+              "description": "ISO Ballot Identifier (e.g., Ballot 2022-01)"
+          },
+          { 
+              "pattern": "^urn:iso:form:.+$",
+              "description": "ISO Form Identifier (e.g., Form A)"
+          },
+          {
+              "pattern": "^urn:iso:resolution:[0-9]+:[0-9]{4}:[0-9]+$",
+              "description": "ISO Resolution Identifier (e.g., Resolution 1:2022:123)"
+          },
+          {
+              "pattern": "^urn:iso:meeting:[0-9]+$",
+              "description": "ISO Meeting Number (e.g., 1234)"
+          },
+          {
+              "pattern": "^urn:iso:country:[0-9]+$",
+              "description": "ISO Country Code (e.g., iso:3166:NL)"
+          },
+          {
+              "pattern": "^urn:iso:city:[0-9]+$",
+              "description": "ISO City Code (e.g., iso:city:123)"
+          }
+        ]
+      },
+    "publicationTypes": {
+      "description": "The 'type' of a publication or project. This is also named the 'delivery' type. Examples include 'IS' for International Standard, 'EN' for European Norm, 'TS' for Technical Specification, etc.",
+      "$comment": "copied from hapi:docu:002",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 8,
+      "examples": [
+        "IS", "EN", "TS", "TR", "PAS", "GUIDE", "WP", "TEC", "SRD", "TMOP", "STTR", "TRF", "ENV", "CR", "HD", "CWA", "OTHER"
+      ],
+      "oneOf": [
+          {
+          "constant": "IS",
+          "description": "International Standard"
+          },
+          {
+          "constant": "EN",
+          "description": "European Norm"
+          },
+          {
+          "constant": "TS",
+          "description": "Technical Specification"
+          },
+          {
+          "constant": "TR",
+          "description": "Technical Report"
+          },
+          {
+          "constant": "PAS",
+          "description": "Publicly Available Specification"
+          },
+          {
+          "constant": "GUIDE",
+          "description": "Guide"
+          },
+          {
+          "constant": "WP",
+          "description": "White Paper"
+          },
+          {
+          "constant": "TEC",
+          "description": "Technology Report"
+          },
+          {
+          "constant": "SRD",
+          "description": "Systems Reference Document"
+          },
+          {
+          "constant": "TMOP",
+          "description": "Technical Management Operations Procedure"
+          },
+          {
+          "constant": "STTR",
+          "description": "Standard Technical Transfer Report"
+          },
+          {
+          "constant": "TRF",
+          "description": "Technical Report File"
+          },
+          {
+          "constant": "ENV",
+          "description": "Environmental Standard"
+          },
+          {
+          "constant": "CR",
+          "description": "CEN Report"
+          },
+          {
+          "constant": "HD",
+          "description": "Harmonization Document"
+          },
+          {
+          "constant": "CWA",
+          "description": "CEN/CENELEC Workshop Agreement"
+          },
+          {
+          "constant": "OTHER",
+          "description": "Other Type of Publication or Project"
+          }, 
+          {
+          "constant": "DATA",
+          "description": "Data"
+          },		
+          {
+          "constant": "ISP",
+          "description": "International Standardized Profile"
+          },
+          {
+          "constant": "IWA",
+          "description": "International Workshop Agreement"
+          },
+          {
+          "constant": "R",
+          "description": "Recommendation"
+          },
+          {
+          "constant": "TTA",
+          "description": "Technology Trends Assessment"
+          }
+      ]
+    }
+  },
+  "notUsed": {
+    "originator":{
+      "type": "string",
+      "$comment": "ref hapi:docu:021.",
+      "deprecated": true,
+      "minLength": 3,
+      "maxLength": 64,
+      "description": "The acronym or name of an organization, partnership or group of SDOs that orginate a project, standard or publication. See also for NSIO: https://www.niso-sts.org/TagLibrary/niso-sts-TL-1-0-html/element/originator.html Open-ended list of values. Representation: Acronym. Example(s): CEN, CENELEC, CEN/CENELEC, IEC, ISO, ISO/IEC, ISO/IEC/IEEE, IEC/IEEE, IDF, ECMA, IEEE, ASTM, etc."
+    },
+    "intPublicationURNs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/publicationURNs"
+      },
+      "description": "Array of URNs related to the international publication. Each item in the array is a URN that identifies an international publication.",
+      "minItems": 1,
+      "maxItems": 5
+    }
+  },
+  "nenPublicationTitles": {
+    "type": "array",
+    "$comment": "Internal reference: ",
+    "items": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+          "isoLanguageCode": {
+            "description": "ISO 639-1 language code for the publication title (e.g., 'en' for English, 'nl' for Dutch).",
+            "type": "string",
+            "pattern": "^[a-z]{2}$",
+            "examples": [
+              "en",
+              "nl"
+            ]
+          },
+          "nenPublicationTitle": {
+            "description": "Title of the NEN publication in the specified language.",
+            "type": "string",
+            "maxLength": 512
+          }
+      }
+    },
+    "minItems": 1,
+    "maxItems": 9
+  },
+  "stdTypeType": {
+    "$ref": "#/definitions/publicationTypes"
+  }
+}

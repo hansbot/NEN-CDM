@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema#",
+  "description": "Schema for NEN Release Item details. The 'releaseItem' corresponds to the 'Manifestation' level of the FRBR model: 'https://en.wikipedia.org/wiki/Functional_Requirements_for_Bibliographic_Records' One 'publication' has several 'releaseItems', each being different renditions of the same intellectual content in various formats or languages. One 'releaseItem' refers to zero or one downloadable content via the 'contentRef' sub-element.",
+  "title": "NenReleaseItem",
+  "version": "0.9.0",
+  "$comment": "Last modified on 2026-02-24 by Hans Bot - NEN. Derived from 'NEN Content Publication V0.8.1-bundled.yaml'",
+  "type": "object",
+  "properties": {
+    "releaseItemId": {
+      "type": "integer",
+      "description": "Unique identifier for the NEN release item.",
+      "examples": [
+        12345
+      ],
+      "minimum": 1,
+      "exclusiveMaximum": 1000000
+    },
+    "releaseItemURN": {
+      "description": "URN for the NEN release item, following a specific format (i.e. urn:nen:releaseItem:12345).",
+      "type": "string",
+      "pattern": "^urn:nen:releaseItem:[0-9]+$",
+      "examples": [
+        "urn:nen:releaseItem:12345"
+      ],
+      "maxLength": 32
+    },
+    "contentRef": {
+      "type": "object",
+      "description": "The reference to how / where to download the content of a releaseItem. Normally all releaseItems do have content, but there are exceptions when: the content is not available online (a physical-only, paper publication), or the content is online but not downloadable (an online database, eg. ISO 7010). Therefore this element is optional.",
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL where the content of the NEN release item can be accessed.",
+          "examples": [
+            "https://example.com/nen-release-item/12345"
+          ],
+          "maxLength": 2048
+        },
+        "mimeType": {
+          "type": "string",
+          "description": "MIME type of the content at the URL.",
+          "examples": [
+            "application/pdf", "text/html", "application/xml"
+          ],
+          "maxLength": 255
+        },
+        "contentFormatType": {
+            "type": "string",
+            "maxLength": 16,
+            "description": "The content format type of the NEN release item.",
+            "examples": [
+                "PDF", "HTML", "XML", "WORD", "EXCEL", "POWERPOINT", "CSV", "JSON", "XML", "YAML", "RDF", "EPS", "TIFF", "EPUB", "TURTLE", "N-TRIPLES", "JSON-LD", "RDF/XML", "RDFa", "TEXT", "CSV", "TSV", "XLSX", "DOCX", "PPTX", "ODT", "ODS", "ODP", "PDF/A", "PDF/X", "PDF/E", "PDF/UA", "PDF/VT", "PDF/UA-2", "PDF/UA-3","ANY" 
+            ],
+            "pattern": "^[A-Z0-9\/-]+$"},
+        "language": {
+          "type": "string",
+          "description": "Language of the content at the URL, represented as an ISO 639-1 2 letter code.",
+          "examples": [
+            "en", "fr", "de"
+          ],
+          "pattern": "^[a-z]{2}$"
+        },
+        "releaseItemType": {
+          "type": "string",
+          "description": "An optional further qualification refining the mandatory \"format\" data element preceeding. Typically indicating which class of PDF document or schema of XML source. See possible values in type definition: releaseItemFormatVariantType", 
+          "examples": [
+            "full text", "summary", "metadata only"
+          ],
+          "maxLength": 64
+        },
+        "contentLength": {
+          "type": "integer",
+          "description": "Number of bytes of the content at the URL. May be used to make sure the complete stream was downloaded.",
+          "examples": [
+            102400
+          ],
+          "minimum": 0
+        },
+        "checksum": {
+          "type": "string",
+          "description": "A signature of the content at the URL, that may be used to (1) detect changes more reliably and simply than using the timestamp - because it really matches the actual content, (2) ensure that the metadata description corresponds effectively to the content it refers via the url, and (3) ensure the data was neither corrupted during upload nor download, or altered during storage",
+          "examples": [
+            "3a7bd3e2360a3d8b1c9fe5b6a1c2d4e5f6g7h8i90j1k2l3m4n5o6p7q8r9s0"
+          ],
+          "maxLength": 255
+        },
+        "pages": {
+          "type": "integer",
+          "description": "Number of pages of the content at the URL, if applicable (e.g., for PDF documents).",
+          "examples": [
+            250
+          ],
+          "minimum": 1,
+          "maximum": 9999
+        }
+      },
+      "required": ["url", "contentFormatType"],
+      "additionalProperties": false
+    },
+    "releaseDate": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^(19|20)[0-9]{2}-(0?[0-9]|1[0-2])-([012]?[0-9]|3[0-1])$",
+      "description": "Release date of the NEN release item in the European format (YYYY-MM-DD).",
+      "examples": [
+        "2026-02-24"
+      ]
+    },
+    "version": {
+      "$comment": "hapi:docu:062",
+      "type": "integer",
+      "description": "Version number of the NEN release item, starting at 1 and incrementing by 1 for each new version.",
+      "examples": [
+        1, 2, 3
+      ],
+      "minimum": 1,
+      "exclusiveMaximum": 1000
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "releaseItemId"
+   ]
+}

@@ -76,7 +76,7 @@
       "minLength": 1,
       "maxLength": 64,
       "examples": [
-        "Chair", "Secretary", "Member"
+        "Chair", "Secretary", "Member", "Observer"
       ]
     },
     "salutation": {
@@ -101,11 +101,11 @@
       "description": "The telephone number of the committee member, used for communication purposes.",
       "type": "string",
       "minLength": 0,
-      "maxLength": 32,
+      "maxLength": 16,
       "examples": [
         "+31-6-12345678", "015-2690390"
       ],
-      "pattern": "^\\+?[0-9\\-\\s]+$" 
+      "pattern": "^+?[0-9 -()]{10,20}$" 
     } 
   },
   "required": [
@@ -116,7 +116,31 @@
     "memberRole"
   ],
   "definitions": {
-    "iddef":
+    "iddef": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9-]+$",
+      "description": "A unique identifier consisting of alphanumeric characters and hyphens.",
+      "$comment": "check the member identifier"
+    }
   },
   "additionalProperties": false
 }
+
+"member in SAP 'contactpersoon':{
+- contactpersoonID: number,
+- beroep
+- titel
+- geslacht
+- academische titel
+- geboortedatum
+- voornaam
+- achternaam
+- burgerlijke staat
+- status (intern)
+- roepnaam
+- inlognaam ISOlutions
+- beheerder NEN Connect
+- contactbevoegdheid (consent)
+- taal (voorkeurstaal)
+- klant-id
+- }, (contact person) seems to be a misnomer, as it implies a relationship with a committee, while it is actually an individual with specific attributes. It would be more appropriate to use 'committeeMember' or simply 'person' to accurately reflect the nature of the entity being described." --- IGNORE ---
