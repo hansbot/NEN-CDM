@@ -101,8 +101,8 @@
       "maxLength": 255
     },
     "references": {
-      "projectId": {
-        "$ref": "./NenIdentifiers.json#/definitions/nenProjectId",
+      "nenPublicationId": {
+        "$ref": "./NenIdentifiers.json#/definitions/nenPublicationId",
         "$comment": "can be used as path parameter in link definition in the API"
       },
       "additionalProperties": false
