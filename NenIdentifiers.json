@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema#",
+  "description": "Shared references for NEN schemas.",
+  "title": "NenDefinitions",
+  "version": "0.9.0",
+  "$comment": "Last modified on 2026-03-06 by Hans Bot - NEN.",
+  "type": "object",
+  "definitions": {
+    "nenProjectId": {
+      "description": "Unique identifier for the NEN project.",
+      "type": "integer",
+      "examples": [
+        1234567
+      ],
+      "minimum": 1,
+      "exclusiveMaximum": 10000000 
+    },
+    "nenPublicationId": {
+      "type": "integer",
+      "description": "Unique identifier for the NEN publication. Verify if this holds true for other SGOs' publications",
+      "examples": [
+        "007510", "027002"
+      ],
+      "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/138248310/nenPublicationId",
+      "pattern": "^[0-9]6$"
+    },
+    "nenFamilyId": {
+      "description": "Unique identification of a family of norms conform NEN definition",
+      "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/138215439/nenFamilyId",
+      "type": "string",
+      "examples": ["IEC 60601", "IEC 60601-2", "ISO 80601-2-12"]
+    },
+    "nenCompatibilityId": {
+      "$comment": "Internally known as nenAlfrescoId. Needed for backwards compatibility. Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/146538535/nenAlfrescoId",
+      "type": "integer"
+    },
+    "releaseItemId": {
+      "type": "integer",
+      "description": "Unique identifier for the NEN release item. Num(8)",
+      "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/137953301/nenReleaseItemId+-+deprecated",
+      "deprecated": true,
+      "examples": [
+        12345
+      ],
+      "minimum": 1,
+      "exclusiveMaximum": 100000000
+    },
+    "nenContentRefId": {
+      "type": "string",
+      "description": "Unique 7 digit number identifying the NEN release item.",
+      "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/144867474/nenContentRefId+-+moved+from+ContentRef+container",      
+      "format": "number",
+      "pattern": "^[0-9]7$",
+      "examples": [
+        "0012345"
+      ]
+    }
+  }
+}

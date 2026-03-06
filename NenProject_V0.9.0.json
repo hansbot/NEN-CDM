@@ -3,24 +3,18 @@
   "description": "Schema for NEN Project details.",
   "title": "NenProject",
   "version": "0.9.0",
-  "$comment": "Last modified on 2026-02-23 by Hans Bot - NEN. Derived from 'NEN Content Publication V0.8.1-bundled.yaml'. Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/135495682/NenProjects",
+  "$comment": "Last modified on 2026-03-05 by Hans Bot - NEN. Derived from 'NEN Content Publication V0.8.1-bundled.yaml'. Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/135495682/NenProjects",
   "type": "object",
   "properties": {
     "nenProjectId": {
-      "description": "Unique identifier for the NEN project.",
-      "type": "integer",
-      "examples": [
-        1234567
-      ],
-      "minimum": 1,
-      "exclusiveMaximum": 9999999 
+      "$ref": "./NenIdentifiers.json#/definitions/nenProjectId"
     },
     "nenProjectReference": {  
       "description": "Reference code or name for the NEN project.",
       "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/135528459/nenProjectReference.",
       "type": "string",
       "minLength": 1,
-      "maxLength": 96,
+      "maxLength": 32,
       "examples": [
         "NEN-1010-2026", "IEC 60163:2024", "NEN-EN 12625-3:1996"
       ]
@@ -29,11 +23,11 @@
       "$comment": "copied from 'cen-publications.yaml'.",
       "description": "URN for the NEN project, following a specific format. Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/128057507/nenProjectId.",
       "type": "string",
-      "pattern": "^urn:nl:nen:proj:[0-9]+$",
+      "maxLength": 20,
+      "pattern": "^nl:nen:proj:[0-9]+$",
       "examples": [
-        "urn:nl:nen:proj:1234567", "urn:nl:nen:proj:86733"
-      ],
-      "maxLength": 96
+        "nl:nen:proj:1234567", "nl:nen:proj:86733"
+      ]
     },
     "nenOriginator": {
       "type": "string",
@@ -47,20 +41,22 @@
       ]
     },
     "nenCopyrightHolder": {
-      "$ref": "#/definitions/sdo",
+      "description": "Copyright holder of the publication",
+      "$ref": "./NenDefinitions.json#/definitions/sdo",
       "$comment": "Internal reference https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/137724029/nenCopyrightHolder."
     },
     "nenCreator": {
-      "$ref": "#/definitions/sdo",
+      "description": "Organisation responsible for the creation of the standard text.",
+      "$ref": "./NenDefinitions.json#/definitions/sdo",
       "$comment": "Internal Reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/141295695/nenCreator."
     },
     "nenOrigine": {
+      "description": "The acronym or name of an organization, partnership or group of SDOs that orginate a project, standard or publication. See also for NSIO: https://www.niso-sts.org/TagLibrary/niso-sts-TL-1-0-html/element/originator.html. Open-ended list of values. Representation: Acronym.",
       "$comment": "Internal Reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/137756814/nenOrigine.",
       "type": "string",
       "deprecated": true,
       "minLength": 2,
-      "maxLength": 64,
-      "description": "The acronym or name of an organization, partnership or group of SDOs that orginate a project, standard or publication. See also for NSIO: https://www.niso-sts.org/TagLibrary/niso-sts-TL-1-0-html/element/originator.html. Open-ended list of values. Representation: Acronym.",
+      "maxLength": 24,
       "examples": [
         "API", "ASME", "ASTM", "ASTM-VOL", "BS", "CEN Guide", "CEN ISO/ASTM TS", "CEN ISO/IEC/TS", "CEN-CENELEC Guide", "CEN-ISO/TR", "CEN-ISO/TS", "CEN/CLC Guide", "CEN/CLC ISO/IEC TR", "CEN/CLC ISO/IEC TS", "CEN/CLC/TR", "CEN/CLC/TS", "CEN/TR", "CEN/TR/ISO/ASTM", "CEN/TS", "CISPR", "CISPR/PAS", "CISPR/TR", "CLC Guide", "CLC IEC/TR", "CLC/TR", "CLC/TS", "CP", "CR", "CWA", "DD", "EFQM", "ES", "HD", "HKZ", "HKZ-WB", "HKZ-ZDI", "IEC", "IEC Guide", "IEC/ASTM", "IEC/IEEE", "IEC/IEEE/PAS", "IEC/PAS", "IEC/SRD", "IEC/TR", "IEC/TS","INK","ISO","ISO Guide","ISO/ASME","ISO/ASTM","ISO/ASTM DTR","ISO/ASTM DTS","ISO/ASTM TR","ISO/ASTM TS","ISO/CIE","ISO/CIE TR","ISO/CIE TS","ISO/DIS","ISO/FDIS","ISO/HL7","ISO/IEC","ISO/IEC DIS","ISO/IEC DTS","ISO/IEC Guide","ISO/IEC ISP","ISO/IEC PAS","ISO/IEC TR","ISO/IEC TS","ISO/IEC/IEEE","ISO/IEEE","ISO/ISP","ISO/PAS","ISO/R","ISO/SAE","ISO/SAE PAS","ISO/TR","ISO/TS","ISO/UNDP PAS","IWA","Miniform","N","NAD-NVN-ENV","NCS","NEN","NEN-bundel","NEN-CISPR","NEN-CISPR/TR","NEN-EN","NEN-EN-IEC","NEN-EN-IEC-PAS","NEN-EN-IEC/ASTM","NEN-EN-IEC/IEEE","NEN-EN-ISO","NEN-EN-ISO/ASTM","NEN-EN-ISO/CIE","NEN-EN-ISO/IEC","NEN-EN-ISO/IEEE","NEN-EN-ISP","NEN-ENV","NEN-EU","NEN-HD","NEN-HD-IEC","NEN-IEC","NEN-IEC/IEEE","NEN-ISO","NEN-ISO/ASTM","NEN-ISO/CIE","NEN-ISO/HL7","NEN-ISO/IEC","NEN-ISO/IEC ISP","NEN-ISO/IEC TR","NEN-ISO/IEC/IEEE","NEN-ISO/IEEE","NEN-ISO/SAE","NEN-ISO/TR","NEN-spec","NEN-StSt","NPR","NPR-CEN Guide","NPR-CEN ISO/IEC TR","NPR-CEN-CLC/TR","NPR-CEN-ISO/TR","NPR-CEN-ISO/TS","NPR-CEN/CLC Guide","NPR-CEN/CLC ISO/IEC TR","NPR-CEN/CLC/TR","NPR-CEN/ISO/ASTM/TR","NPR-CEN/TR","NPR-CEN/TS","NPR-CISPR","NPR-CISPR/TR","NPR-CLC-IEC/TR","NPR-CLC-IEC/TS","NPR-CLC/TR","NPR-CLC/TS","NPR-CR","NPR-CWA","NPR-EGKS","NPR-EN-IEC","NPR-ENV-IEC","NPR-ES","NPR-IEC","NPR-IEC Guide","NPR-IEC-CLC/TR","NPR-IEC-CLC/TS","NPR-IEC/PAS","NPR-IEC/TR","NPR-IEC/TS","NPR-ISO","NPR-ISO Guide","NPR-ISO/CIE TR","NPR-ISO/IEC Guide","NPR-ISO/IEC PAS","NPR-ISO/IEC TR","NPR-ISO/IEC TS","NPR-ISO/PAS","NPR-ISO/TR","NPR-ISO/TS","NPR-R","NTA","NTA-ISO-IWA","NTA-IWA","NTR","NVN","NVN-CEN ISO/IEC/TS","NVN-CEN ISO/TS","NVN-CEN/CLC ISO/IEC TS","NVN-CEN/CLC/TS","NVN-CEN/ISO/ASTM TS","NVN-CEN/TS","NVN-CLC-IEC/TS","NVN-CLC/TS","NVN-ENV","NVN-ENV-IEC","NVN-ENV-ISO","NVN-IEC","NVN-IEC-CLC/TS","NVN-IEC/TS","NVN-ISO","NVN-ISO/CIE TS","NVN-ISO/IEC TS","NVN-ISO/TR","NVN-ISO/TS","OHSAS","PAS","PD","PGS","R","SPE","UIT","V","WET-EU"
       ]
@@ -76,18 +72,12 @@
       "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
     },
     "nenCompensation": {
-      "type": "string",
-      "$comment": "Internal reference https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/138346533/nenCompensation.",
-      "description": "This property indicates an 'afkoopcode'.",
-      "examples": [
-        "EGIS", "hENS"
-      ],
-      "maxLength": 16
+      "$ref": "./NenDefinitions.json#/definitions/nenCompensation"
     },
     "lastChangedAt": {
-      "$comment": "adapted from 'cen-publications.yaml'  'lastChangeTimestamp'.",
-      "$ref": "#/definitions/isoDateTimeExt",
       "description": "Timestamp for most recent update. Cannot be a date in the future.",
+      "$comment": "adapted from 'cen-publications.yaml'  'lastChangeTimestamp'.",
+      "$ref": "./NenDefinitions.json#/definitions/isoDateTimeExt",
       "expressions": {
         "notFutureDate": {
           "description": "lastChangeTimestamp cannot be a date in the future.",
@@ -100,12 +90,11 @@
       "type": "array",
       "items": {
         "type": "object",
-        "additionalProperties": false,
         "properties": {
-          "language": {
-            "$ref": "#/definitions/isoLanguageCode-1"
+          "isoLanguageCode": {
+            "$ref": "./NenDefinitions.json#/definitions/isoLanguageCode-1"
           },
-          "title": {
+          "localTitle": {
             "$comment": "copied from 'cen-publications.yaml'.",
             "description": "The main title of the NEN project.",
             "type": "string",
@@ -115,17 +104,14 @@
               "NEN-EN 12625-3:1996 - Textiel - Bepaling van de absorptie van water - Deel 3: Absorptie van water door onderdompeling"
             ]
           },
-          "nenTitleSource": {
+          "localTitleSource": {
             "description": "The source from which the title was derived, such as 'NEN', 'ISO', 'CEN', etc.",
-            "type": "string",
-            "maxLength": 64,
-            "examples": [
-              "NEN", "ISO", "CEN"
-            ]
+            "$ref": "./NenDefinitions.json#/definitions/sdo"
           }
         },
         "minItems": 1,
         "maxItems": 5,
+        "additionalProperties": false,
         "required": [
           "language", 
           "title"
@@ -137,10 +123,9 @@
       "type": "array",
       "items": {
         "type": "object",
-        "additionalProperties": false,
         "properties": {
           "nenStageCode": {
-            "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/144015578/nenStageCode.",
+            "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/144015578/nenStageCode. External reference: https://boss.cen.eu/media/BOSS%20CENELEC/ref/stage_codes.pdf",
             "description": "The stage code of the project, which indicates the stage of the project in its lifecycle.",
             "type": "string",
             "examples": [
@@ -163,7 +148,7 @@
           },
           "nenStageTargetDate": {
             "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/147193867/nenStageTargetDate.",
-            "$ref": "#/definitions/isoCalendarDate",
+            "$ref": "./NenDefinitions.json#/definitions/isoCalendarDate",
             "description": "nenStageTargetDate indicates the short-term planned date when the stage is expected to become CURRENT in the future.",
             "expressions": {
               "notPastDate": {
@@ -174,13 +159,13 @@
           },
           "nenStageDueDate": {
             "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/143851847/nenStageDueDate.",
-            "$ref": "#/definitions/isoCalendarDate",
-            "description": "The target date for the current stage of the project. This indicates when the project is expected to reach a specific milestone or when it is expected to move to the next stage."
+            "description": "The target date for the current stage of the project. This indicates when the project is expected to reach a specific milestone or when it is expected to move to the next stage.",
+            "$ref": "./NenDefinitions.json#/definitions/isoCalendarDate"
           },
           "nenStageEffectiveDate": {
             "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/143688053/nenStageEffectiveDate.",
             "description": "nenStageEffectiveDate describes when the stage was effectivey reached",
-            "$ref": "#/definitions/isoCalendarDate",
+            "$ref": "./NenDefinitions.json#/definitions/isoCalendarDate",
             "expressions": {
               "notFutureDate": {
                 "description": "nenStageEffectiveDate cannot be a date in the future.",
@@ -188,18 +173,19 @@
               }
             }
           },
-          "nenPublicationUri": {
-            "$comment": "HBO: this seems the right location for an optional reference to the publication version produced in this stage of the project",
+          "nenPublicationId": {
+            "$comment": "HBO: this seems the best location for an optional reference to the publication version produced in this stage of the project",
             "description": "Reference to the resource location of the publication version",
-            "$ref": "#/definitions/uri"
+            "$ref": "./NenIdentifiers.json#/definitions/nenPublicationId"
           }
         },
         "minItems": 1,
-        "maxItems": 99,
+        "maxItems": 42,
+        "additionalProperties": false,
         "required": [
           "nenStageCode"
         ],
-        "$comment": "Discussion. Logically, conform the description, only oneOf targetDate, dueDate and effectiveDate can be given at any point in time. At least, when effectiveDate is given, the others are no longer relevant. The projects service should be able to guarantee consistency"
+        "$comment": "Discussion. Logically, conform the description, only oneOf targetDate, dueDate and effectiveDate can be given at any point in time. At least, when effectiveDate is given, the others are no longer relevant. The projects service should be able to guarantee consistency. For now, no data logic is assumed in the CDM"
       }
     },
     "nenAbstracts": {
@@ -210,7 +196,7 @@
         "additionalProperties": false,
         "properties": {
           "language": {
-            "$ref": "#/definitions/isoLanguageCode-1"
+            "$ref": "./NenDefinitions.json#/definitions/isoLanguageCode-1"
           },
           "nenAbstract": {
             "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/137691231/nenAbstract.",
@@ -223,7 +209,7 @@
             ]
           },
           "nenAbstractSource": {
-            "$ref": "#/definitions/sdo"
+            "$ref": "./NenDefinitions.json#/definitions/sdo"
           }
         },
         "minItems": 1,
@@ -238,30 +224,23 @@
       "description": "Array of reference objects related to the NEN project. Prefer an array over '&' delimited strings for better structure and validation. Each reference object can contain properties such as 'reference', 'stdNumber', and 'nenCommitteeDisplayName'.",
       "type": "object",
       "properties": {
-        "nenProjectReferences": {
+        "nenProjects": {
           "type": "array",
           "items": {
             "projectId": {
-              "$ref": "#/properties/nenProjectId",
+              "$ref": "./NenIdentifiers.json#/definitions/nenProjectId",
               "$comment": "can be used as path parameter in link definition in the API"
             },
           "minItems": 1,
           "maxItem": 12
           }
         },
-        "nenFamilyReference":  {
-          "type": "array",
-          "items": {
-            "familyId": {
-              "type": "string",
-              "$comment": "to be replaced with the definition in the family schema"
-            },
-          "minItems": 1,
-          "maxItem": 12
+        "nenFamily":  {
+          "$comment": "removed array to conform to the cardinality as designed in the UML metamodel for the normenbank",
+          "$ref": "./NenIdentifiers.json#/definitions/nenFamilyId"
           }
         },
       "additionalProperties": false
-      }
     }
   },
   "required": [
@@ -270,134 +249,5 @@
     "references",
     "stageCode"
    ],
-  "additionalProperties": false,
-
-  "definitions": {
-    "isoCalendarDate": {
-      "type": "string",
-      "examples": ["2026-02-28", "2028-02-29, 2027-12-31"],
-      "pattern": "^(19|20)[0-9]{2}-(0?[0-9]|1[0-2])-([012]?[0-9]|3[0-1])$",
-      "description": "A standard ISO calendar date in the European format (YYYY-MM-DD)."
-    },
-    "isoDateTimeExt": {
-      "type": "string",
-      "examples": ["2026-02-28T14:30:00Z", "2028-02-29T23:59:59Z"],
-      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
-      "description": "A date and time in ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ)."
-    },
-    "isoLanguageCode-1": {
-      "type": "string",
-      "description": "A standard ISO 639-1 language code.",
-      "examples": ["en", "nl", "fr", "de", "es"],
-      "pattern": "^[a-z]{2}$"
-    },
-    "sdo": {
-      "type": "string",
-      "minLength": 2,
-      "maxLength": 64,
-      "description": "Organisation involved in the creation of the standard text.",
-      "examples": [
-        "NEN", "ISO", "IEC", "CEN", "CENELEC", "API", "ASME", "ASTM", "BSI", "DIN", "IEEE", "UL", "ETSI"
-      ]
-    }
-  },
-
-  "unusedProperties": {
-    "stdPartNumber": {
-      "$comment": "copied from 'cen-publications.yaml'. Unclear if this should go into references or be a separate property. For now, keeping it as a separate property for clarity, but it could be moved into the references array if it is considered a type of reference.",
-      "description": "project's standard or document part 'number', which may also contain non-numeric characters, e.g. '2B'",
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 18,
-      "examples": [
-        "2B"
-      ]
-    },
-    "stageCode": {
-      "oneOf": [
-        {
-          "harmonizedStageCode": {
-            "$comment": "copied from 'cen-publications.yaml'.",
-            "description": "harmonizedStageCode (i.e. 60.60) cannot be used with stageCode. This will match any 'CURRENT' stage, not a 'CLOSED' stage.",
-            "type": "string",
-            "examples": [
-                "00.60.0000", "40.97.0009", "90.00.0000"
-            ],
-            "pattern": "^[0-9]{2}\\.[0-9]{2}\\.[0-9]{4}$"
-          }
-        },
-        {
-          "stageCode": {
-            "type": "string",
-            "$comment": "copied from 'cen-publications.yaml'.",
-            "description": "stageCode (i.e. 6060) cannot be used with harmonizedStageCode",
-            "examples": [
-                "6060"
-            ],
-            "pattern": "^[0-9]{4}$"
-          }
-        }
-      ]
-    },
-    "nenCommitteeUrn": {
-      "description": "URN for the NEN committee associated with the project, following a specific format (i.e. committeeUrn=iso:committee:54158&committeeUrn=iso:committee:48138&committeeUrn=iso:committee:4559).",
-      "type": "string",
-      "$comment": "to be redefined as array. copied from 'cen-publications.yaml'. pattern not consistent with description. Also, relation in metamodel is to nenFamily, not nenProject.",
-      "examples": [
-        "urn:nen:committee:12345"
-      ],
-      "pattern": "^urn:nen:committee:[0-9]+$"
-    },
-      "nenProjectRelationType": {
-      "description": "project relation type, exact 'value'. (i.e. projectRelationType=ADOPTED_FROM&projectRelationType=JOINED_WORK_ITEM&projectRelationType=VIENNA_AGREEMENT)",
-      "$comment": "seems deprecated in the metamodel",
-      "type": "array",
-        "items": {
-          "type": "string"
-        },
-       "examples": [
-        "ADOPTED_FROM", "JOINED_WORK_ITEM", "VIENNA_AGREEMENT"
-       ]
-    },
-      "externalProjectId": {
-      "description": "externalProjectId (i.e. iso:proj:21494)",
-      "$comment": "copied from 'cen-publications.yaml'.",
-      "type": "string",
-      "examples": [
-        "iso:proj:21494"
-      ]
-    },
-    "mandateUrn": {
-      "description": "Mandate urn, exact 'value'. (i.e. mandateUrn=cen:mandate:26)",
-      "$comment": "copied from 'cen-publications.yaml'.",
-      "type": "string",
-      "examples": [
-        "cen:mandate:26"
-      ]
-    },
-    "mandateReference": {
-      "description": "Mandate reference, exact 'value'. (i.e. mandateReference=M/396)",
-      "$comment": "copied from 'cen-publications.yaml'.",
-      "type": "string",
-      "examples": [
-        "M/396"
-      ]
-    },
-    "directiveUrn": {
-      "description": "Directive urn, exact 'value'. (i.e. directiveUrn=cen:directive:5218)",
-      "$comment": "copied from 'cen-publications.yaml'.",
-      "type": "string",
-      "examples": [
-        "cen:directive:5218"
-      ]
-    },
-    "directiveReference": {
-      "description": "Direct reference, exact 'value'. (i.e. directiveReference=2014/68/EU)",
-      "$comment": "copied from 'cen-publications.yaml'.",
-      "type": "string",
-      "examples": [
-        "2014/68/EU"
-      ]
-    }
-  }
+  "additionalProperties": false
 }

@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema#",
+  "description": "Schema for NEN Publication details",
+  "title": "NenPublication",
+  "version": "0.9.0",
+  "$comment": "Last modified on 2026-03-06 by Hans Bot - NEN. Derived from 'NEN Content Publication V0.8.1-bundled.yaml'",
+  "type": "object",
+  "properties": {
+    "nenPublicationId": {
+      "$ref": "./NenDefinitions.json#/definitions/nenPublicationId"
+    },
+    "nenPublicationURN": {
+      "$comment": "copied from 'cen-publications.yaml', ref hapi:docu:003. No internal reference, but defined in https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/268009511/Value+lists#Naming-convention-NEN-urn%E2%80%99s (adding as optional attribute nevertheless)",
+      "description": "URN for the NEN publication, following a specific format (i.e. urn:nen:publication:NEN-7510). A 'urn' in HAPI is used as primary entity identifier.",
+      "type": "string",
+      "pattern": "^nl:nen:pub:[\\w:_/+-]+$",
+      "examples": [
+        "nl:nen:pub:NEN-7510"
+      ],
+      "maxLength": 256
+    },
+    "nenPublicationType": {
+      "type": "string",
+      "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/174915663/nenPublicationType. Note that this differs from the haromized definition of publicationType: ./NenDefinitions.json#/definitions/publicationType",
+      "deprecated": true,
+      "minLength": 1,
+      "maxLength": 32,
+      "description": "Type of publication, such as 'Norm', 'Supplement', 'Correction'",
+      "examples": [
+        "Norm", "Corrigendum", "Amendment"
+      ]
+    },
+    "nenCompatibilityId": {
+      "$ref": "./NenDefinitions.json#/definitions/nenCompatibilityId"
+    },
+    "nenLanguage": {
+      "description": "Primary language of the NEN publication, represented as an ISO 639-1 code (e.g., 'en' for English, 'nl' for Dutch).",
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 17,
+      "$comment": "Note: multiple languages can be concatenated (separated by semicolon) in one string. Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/141656215/nenLanguage",
+      "pattern": "^[a-z]{2}(;[a-z]{2})*$",
+      "examples": [
+        "de", "en", "es", "fr", "nl", "ru",
+        "de;en;fr"
+      ]
+    },
+    "nenCompensation": {
+      "$ref": "./NenDefinitions.json#/definitions/nenCompensation"
+    },
+    "references":{
+      "projectId": {
+        "$ref": "./NenIdentifiers.json#/definitions/nenProjectId",
+        "$comment": "can be used as path parameter in link definition in the API"
+      },
+      "nenReleaseItems": {
+        "type": "array",
+        "items": {
+          "nenContentRefId": {
+            "$ref": "./NenIdentifiers.json#/definitions/nenContentRefId",
+            "$comment": "can be used as path parameter in link definition in the API"
+          },
+        "minItems": 1,
+        "maxItem": 12
+        }
+      }
+    }
+  },
+  "required": [
+      "nenPublicationId",
+      "nenLanguage"
+  ]
+}
