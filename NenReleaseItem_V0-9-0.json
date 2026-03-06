@@ -99,6 +99,13 @@
         "3a7bd3e2360a3d8b1c9fe5b6a1c2d4e5f6g7h8i90j1k2l3m4n5o6p7q8r9s0"
       ],
       "maxLength": 255
+    },
+    "references": {
+      "projectId": {
+        "$ref": "./NenIdentifiers.json#/definitions/nenProjectId",
+        "$comment": "can be used as path parameter in link definition in the API"
+      },
+      "additionalProperties": false
     }
   },
   "additionalProperties": false,
