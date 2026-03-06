@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema#",
-  "description": "Shared references for NEN schemas.",
+  "description": "Shared identifiers for (cross-references in) NEN schemas. Identitfiers are not versioned, and only updated with non-breaking changes (i.e. additions)",
   "title": "NenDefinitions",
   "version": "0.9.0",
   "$comment": "Last modified on 2026-03-06 by Hans Bot - NEN.",
