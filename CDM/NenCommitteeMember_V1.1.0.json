@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema#",
+  "description": "Schema for NEN CommitteeMember",
+  "title": "CommitteeMember Canonical Schema",
+  "version": "1.1.0",
+  "$comment": "Last modified on 2026-03-10 by Hans Bot - NEN, Please note V1.1.0 has been aligned with the attributes as currently avaiable in SAP. Additionally, personDetails are split off into the generic nenDefinitions file for reuse.",
+  "type": "object",
+  "properties": {
+    "memberId": {
+      "$comment": "in SAP: contactpersoonID",
+      "$ref": "./NenIdentifiers.json#/definitions/memberId"
+    },
+    "member": {
+      "$ref": "./NenDefinitions.json#/definitions/person"
+    },
+    "memberRole": {
+      "description": "The role of the committee member within the NEN committee, such as 'Chair', 'Secretary', 'Member', etc.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 16,
+      "default": "Member",
+      "examples": [
+        "Chair", "Secretary", "Member", "Observer"
+      ]
+    },
+    "consent": {
+      "type": "boolean",
+      "description": "Indicates whether the member may be contacted",
+      "$comment": "in SAP: 'contactbevoegdheid'"
+    },
+    "references": {
+      "clientId": {
+        "$ref": "./NenIdentifiers.json#/definitions/clientId"
+      }
+    }
+  },
+  "required": [
+    "memberId",
+    "member",
+    "member.emailAddress"
+  ],
+  "additionalProperties": false
+}

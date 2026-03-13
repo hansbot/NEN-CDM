@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema#",
+  "description": "Shared identifiers for (cross-references in) NEN schemas. Identitfiers are not versioned, and only updated with non-breaking changes (i.e. additions)",
+  "title": "NenDefinitions",
+  "version": "0.9.0",
+  "$comment": "Last modified on 2026-03-06 by Hans Bot - NEN.",
+  "type": "object",
+  "definitions": {
+    "committeeUrn": {
+      "type": "string",
+      "description": "Unique identifier for the committee, typically in the format 'organization:committee:uniqueId'.",
+      "$ref": "./NenDefinitions.json#/definitions/publicationURN"
+    },
+    "memberId": {
+      "description": "Unique identifier for the committee member, consisting of numeric characters.",
+      "type": "integer",
+      "examples": [
+        "748219, 23984"
+      ]
+    },
+    "clientId": {
+      "description": "Unique identifier for NEN-customers",
+      "$comment": "In SAP registered as 'klant-id'",
+      "type": "integer",
+      "examples": [2451, 433, 15399]
+    },
+    "nenCommitteeId": {
+      "type": "integer",
+      "description": "Unique identifier for the committee, typically in the format 'organization:committee:uniqueId'.",
+      "$comment": "In SAP 'projectnummer'. Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/143786327/nenCommitteeReference",
+      "example": 341013
+    },
+    "nenCompatibilityId": {
+      "$comment": "Internally known as nenAlfrescoId. Needed for backwards compatibility. Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/146538535/nenAlfrescoId",
+      "type": "integer"
+    },
+    "nenContentRefId": {
+      "type": "string",
+      "description": "Unique 7 digit number identifying the NEN release item.",
+      "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/144867474/nenContentRefId+-+moved+from+ContentRef+container",      
+      "format": "integer",
+      "pattern": "^[0-9]7$",
+      "examples": [
+        "0012345"
+      ]
+    },
+    "nenFamilyId": {
+      "description": "Unique identification of a family of norms conform NEN definition",
+      "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/138215439/nenFamilyId",
+      "type": "string",
+      "examples": ["IEC 60601", "IEC 60601-2", "ISO 80601-2-12"]
+    },
+    "nenProjectId": {
+      "type": "integer",
+      "description": "Unique identifier for the NEN project.",
+      "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/128057507/nenProjectId",
+      "examples": [
+        1234567
+      ],
+      "minimum": 1,
+      "exclusiveMaximum": 10000000 
+    },
+    "nenPublicationId": {
+      "type": "string",
+      "description": "Unique identifier for the NEN publication. Verify if this holds true for other SGOs' publications",
+      "$comment": "Verify type. Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/138248310/nenPublicationId",
+      "pattern": "^[0-9]6$",
+      "examples": [
+        "007510", "027002"
+      ]
+    },
+    "releaseItemId": {
+      "type": "integer",
+      "description": "Unique identifier for the NEN release item. Num(8)",
+      "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/137953301/nenReleaseItemId+-+deprecated",
+      "deprecated": true,
+      "examples": [
+        12345
+      ],
+      "minimum": 1,
+      "exclusiveMaximum": 100000000
+    }
+  }
+}

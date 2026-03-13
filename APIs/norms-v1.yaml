@@ -1,0 +1,148 @@
+openapi: 3.1.0
+info:
+  title: NEN Content Domain API
+  version: 0.9.0
+  description: |
+    API to access the standards managed by NEN: Standards Family > Standards Projects > Standards Publications > Resource Items
+    Audience: clients continually updating a shadow library of standards content.
+  contact:
+    name: NEN Servicedesk IT
+    email: ServicedeskITRegie@nen.nl
+    url: 'https://www.nen.nl/contact-nl'
+tags:
+  - name: Family
+    description: Collection and item resource for Standard Families
+  - name: Project
+    description: Collection and item resource for Standard Projects
+  - name: Publication
+    description: Collection and item resource for Standard Publications
+  - name: ResourceItem
+    description: Collection and item resource for Standard Resource Items
+  - name: Healthcheck
+    description: to verify if the service is up and running healthily
+paths:
+  /health:
+    get:
+      description: Check the status of the service. Returns UP or DOWN with the time of the check.
+      tags:
+        - Healthcheck
+      summary: Healthstatus service
+      operationId: getHealthStatus
+      parameters:
+        - $ref: './NenOasFragments.json#/parameters/correlationId'
+      responses:
+        '200':
+          description: Service status received
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/headers/correlationId'
+          content:
+            application/json:
+              schema:
+                $ref: './NenOasFragments.json#/schemas/healthStatus'
+        '500':
+          $ref: './NenOasFragments.json#/responses/500'
+        '503':
+          $ref: './NenOasFragments.json#/responses/503'
+        '504':
+          $ref: './NenOasFragments.json#/responses/504'
+      security:
+        - apiKey: []
+  /projects:
+    get:
+      description: List of projects, filtered by query parameters, sorted by projectId
+      operationId: listProjects
+      summary: List projects
+      tags:
+        - Project
+      parameters:
+        - name: from
+          in: query
+          description: Startingpoint in time for the collection of updated pro
+          required: false
+          schema:
+            $ref: '../CDM/NenDefinitions.json#/definitions/isoDateTimeExt'
+        - name: maxNumber
+          in: query
+          description: Maximum number of results in the collection
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+        - $ref: './NenOasFragments.json#/parameters/correlationId'
+      responses:
+        '200':
+          description: Project details
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    nenProjectId:
+                      $ref: '../CDM/NenIdentifiers.json#/definitions/nenProjectId'
+                    updatedAt:
+                      $ref: '../CDM/NenProject_V0.9.0.json#/properties/updatedAt'
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/headers/correlationId'
+            X-Next:
+              description: query for the subsequent collection
+              required: true
+              schema:
+                type: string
+                format: uri
+                example: 'https://api.nen.nl/api/norms/publication/v1/projects?from=2026-02-28T14:30:00Z&maxNumber=100'
+  /projects/{projectId}:
+    get:
+      description: Retrieve NEN project with details
+      operationId: getProjectById
+      tags:
+        - Project
+      summary: Retrieve project by Id
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            $ref: '../CDM/NenIdentifiers.json#/definitions/nenProjectId'
+          description: Unique ID of the NEN project
+        - $ref: './NenOasFragments.json#/parameters/correlationId'
+      responses:
+        '200':
+          description: Project details
+          content:
+            application/json:
+              schema:
+                $ref: '../CDM/NenProject_V0.9.0.json#'
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/parameters/correlationId'
+servers:
+  - url: https://api{stage}nen.nl/api/norms/v1
+    description: Production environment. Please note that naming is provisional, please update with final domain and hostname
+    variables:
+      stage:
+        default: .
+        description: a descriptor for the target environment, such as .tst. .acc. and .demo.
+components:
+  securitySchemes:
+    clientCredentials:
+      $ref: './NenOasFragments.json#/securitySchemes/clientCredentials'
+    bearerAuth:
+      $ref: './NenOasFragments.json#/securitySchemes/jwtBearer'
+    apiKey:
+      $ref: './NenOasFragments.json#/securitySchemes/apiKey'
+    oauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: "https://auth.example.com/authorize"
+          tokenUrl: "https://auth.example.com/token"
+          refreshUrl: "https://auth.example.com/token"
+          scopes:
+            "read:resources": "Read access to resources"
+            "write:resources": "Write access to resources"
+            "admin": "Full admin access"

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema#",
   "description": "Schema for NEN Publication details",
-  "title": "NenPublication",
+  "title": "NenPublication Canonical Schema",
   "version": "0.9.0",
   "$comment": "Last modified on 2026-03-06 by Hans Bot - NEN. Derived from 'NEN Content Publication V0.8.1-bundled.yaml'",
   "type": "object",
@@ -10,14 +10,8 @@
       "$ref": "./NenDefinitions.json#/definitions/nenPublicationId"
     },
     "nenPublicationURN": {
+      "$ref": "./NenDefinitions.json#/definitions/nenPublicationURN",
       "$comment": "copied from 'cen-publications.yaml', ref hapi:docu:003. No internal reference, but defined in https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/268009511/Value+lists#Naming-convention-NEN-urn%E2%80%99s (adding as optional attribute nevertheless)",
-      "description": "URN for the NEN publication, following a specific format (i.e. urn:nen:publication:NEN-7510). A 'urn' in HAPI is used as primary entity identifier.",
-      "type": "string",
-      "pattern": "^nl:nen:pub:[\\w:_/+-]+$",
-      "examples": [
-        "nl:nen:pub:NEN-7510"
-      ],
-      "maxLength": 256
     },
     "nenPublicationType": {
       "type": "string",
@@ -61,7 +55,8 @@
             "$comment": "can be used as path parameter in link definition in the API"
           },
         "minItems": 1,
-        "maxItem": 12
+        "maxItem": 12,
+        "unique"
         }
       }
     }

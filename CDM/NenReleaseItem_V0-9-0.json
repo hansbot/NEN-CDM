@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema#",
   "description": "Schema for NEN Release Item details. The 'releaseItem' corresponds to the 'Manifestation' level of the FRBR model: 'https://en.wikipedia.org/wiki/Functional_Requirements_for_Bibliographic_Records' One 'publication' has several 'releaseItems', each being different renditions of the same intellectual content in various formats or languages. One 'releaseItem' refers to zero or one downloadable content via the 'contentRef' sub-element.",
-  "title": "NenReleaseItem",
+  "title": "NenReleaseItem Canonical Schema",
   "version": "0.9.0",
   "$comment": "Last modified on 2026-03-06 by Hans Bot - NEN. Derived from 'NEN Content Publication V0.8.1-bundled.yaml'",
   "type": "object",

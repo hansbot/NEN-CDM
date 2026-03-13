@@ -1,0 +1,3 @@
+apis:
+  APIs/norms-v1.yaml:
+    alias: nen-content-domain-api
