@@ -6,11 +6,6 @@
   "$comment": "Last modified on 2026-03-06 by Hans Bot - NEN.",
   "type": "object",
   "definitions": {
-    "committeeUrn": {
-      "type": "string",
-      "description": "Unique identifier for the committee, typically in the format 'organization:committee:uniqueId'.",
-      "$ref": "./NenDefinitions.json#/definitions/publicationURN"
-    },
     "memberId": {
       "description": "Unique identifier for the committee member, consisting of numeric characters.",
       "type": "integer",
@@ -43,6 +38,31 @@
       "examples": [
         "0012345"
       ]
+    },
+    "nenFamilyAdmin": {
+      "type": "string",
+      "description": "Name of the family, concatenation of an SDO and a number, seperated by a single space",
+      "maxLength": 64,
+      "pattern": "^[A-Z/]+[ ]{1}[0-9]+$"
+    },
+    "nenFamilyNumber": {
+      "type": "object",
+        "properties": {
+            "main": {
+
+            },
+            "sub": {
+
+            },
+            "subsub": {
+
+            },
+            "suffix": {
+
+            } 
+          },
+          "additionalProperties": false,
+          "required": ["main"]
     },
     "nenFamilyId": {
       "description": "Unique identification of a family of norms conform NEN definition",

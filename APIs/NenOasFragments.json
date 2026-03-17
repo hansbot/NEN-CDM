@@ -3,19 +3,6 @@
   "title": "Collection of Open API Specification Fragments and Standards Components to $ref to",
   "version": "0.9.0",
   "$comment": "Last modified on 2026-03-11 by Hans Bot - NEN.",
-  "parameters": {
-    "correlationId": {
-      "name": "X-Correlation-Id",
-      "description": "identifier to observe API request processing across the processing pipeline",
-      "required": false,
-      "in": "header",
-      "schema": {
-        "schema": {
-            "$ref": "#/schemas/obsIds"
-        }
-      }
-    }
-  },
   "schemas": {
     "problemDetail": {
       "type": "object",
@@ -93,6 +80,12 @@
         } 
       }
     },
+    "eTag": {
+      "type": "string",
+      "description": "ETag value corresponding to the state of the resource; typically a checksum",
+      "format": "ETag",
+      "maxLength": 64
+    },
     "errorRespons": {
         "headers": {
             "X-Correlation-Id": {
@@ -120,13 +113,68 @@
         }
     }
   },
+  "parameters": {
+    "ifChanged": {
+      "name": "If-None-Matched",
+      "description": "condition to get resource only when changed",
+      "in": "header",
+      "required": false,
+      "schema": {
+        "$ref": "#/schemas/eTag"
+      }
+    },
+    "correlationId": { 
+      "name": "X-Correlation-Id",
+      "description": "identifier to observe API request processing across the processing pipeline",
+      "in": "header",
+      "required": false,
+      "schema": {
+        "$ref": "#/schemas/obsIds"
+      }
+    },
+    "fromDate": {
+      "name": "from",
+      "in": "query",
+      "description": "Startingpoint in time for the collection of updated resources",
+      "required": false,
+      "schema": {
+        "$ref": "../CDM/NenDefinitions.json#/definitions/isoDateTimeExt"
+      } 
+    },
+    "maxNumberOfItems": {
+      "name": "maxNumber",
+      "in": "query",
+      "description": "Maximum number of results in the collection",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "minimum": 1
+      }
+    }
+  },
   "headers": {
     "correlationId": { 
-        "description": "identifier to observe API request processing across the processing pipeline",
-        "required": false,
-        "schema": {
-            "$ref": "#/schemas/obsIds"
-        }
+      "description": "identifier to observe API request processing across the processing pipeline",
+      "required": false,
+      "schema": {
+        "$ref": "#/schemas/obsIds"
+      }
+    },
+    "eTag": {
+      "description": "ETag value corresponding to the state of the resource in the server",
+      "required": false,
+      "schema": {
+        "$ref": "#/schemas/eTag"
+      }
+    },
+    "next": {
+      "description": "query for the subsequent part of the collection",
+      "required": true,
+      "schema":  {
+        "type": "string",
+        "format": "uri",
+        "example": "https://api.nen.nl/api/norms/publication/v1/projects?from=2026-02-28T14:30:01Z&maxNumber=100"
+      }
     }
   },
   "responses": {
@@ -144,6 +192,12 @@
     },
     "204": {
       "description": "No content; empty list (204)",
+      "headers": {
+        "$ref": "#/headers/correlationId"
+      }
+    },
+    "304": {
+      "description": "Not modified (304)", 
       "headers": {
         "$ref": "#/headers/correlationId"
       }
@@ -211,7 +265,7 @@
         "name": "X-API-Key"
     },
     "clientCredentials": {
-        "description": "OAuth client credential flow",
+        "description": "OAuth client credentials flow",
         "type": "oauth2",
         "in": "header",
         "name": "Authorization",
@@ -220,13 +274,36 @@
             "clientCredentials" : {
                 "tokenUrl": "https://api.nen.nl/authenticate"
             }
+        },
+        "scopes": {
+            "read": "Read access to norms info",
+            "monitor": "Read access to health endpoint",
+            "postEvents": "Write access to events channels"
         }
     },
     "mutualTLS": {
-        "description": "OAuth client credential flow"
+        "description": "Mutual authentication during setup of TLS connection, typically used between servers",
+        "type": "mutualTLS"
     },
     "OIDC": {
-        "description": "OAuth client credential flow"
+        "description": "Access token issued using OpenID Connect Authentication flow",
+        "type": "openIdConnect",
+        "name": ""
+    },
+    "oauth2": {
+      "type": "oauth2",
+      "flows": {
+        "authorizationCode": {
+          "authorizationUrl": "https://auth.example.com/authorize",
+          "tokenUrl": "https://auth.example.com/token",
+          "refreshUrl": "https://auth.example.com/token",
+          "scopes": {
+            "read:resources": "Read access to resources",
+            "write:resources": "Write access to resources",
+            "admin": "Full admin access" 
+          }
+        } 
+      }
     }
   }
 }

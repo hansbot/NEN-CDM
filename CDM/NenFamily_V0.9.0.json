@@ -1,0 +1,186 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema#",
+  "description": "Schema for NEN Family details",
+  "title": "NenFamily Canonical Schema",
+  "version": "0.9.0",
+  "$comment": "Last modified on 2026-03-16 by Hans Bot - NEN.",
+  "type": "object",
+  "properties": {
+    "nenFamilyId": {
+        "$ref": "./NenIdentifiers.json#/definitions/nenFamilyId"
+    },
+    "nenFamilyURN": {
+        "$ref": "./NenDefinitions.json#/definitions/nenFamilyURN"
+    },
+    "nenFamily": {
+        "type": "string",
+        "description": "Number owner concatenated with standard number",
+        "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/138903736/nenFamily",
+        "examples": [
+            "NEN 7540", "ISO 7551", "ISO/IEC 27551", "EN 16601-00"
+        ]
+    },
+    "nenFamilyDescriptions": {
+        "type": "array",
+        "items": {
+            "type": "object",
+            "properties": {
+                "language": {
+                    "$ref": "./NenDefinitions.json#/definitions/isoLanguageCode-1"
+                },
+                "localTopic": {
+                    "type": "string"
+                },
+                "localFullTitle": {
+                    "type": "string"
+                },
+                "localPartTitle": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "minItems": 1,
+        "maxItems": 5,
+        "uniqueItems": true
+    },
+    "nenStandardType": {
+
+    },
+    "nenOrder": {
+        "description": "In cases where the the automated ordering of Poolparty does not suffice the order can be forced manually",
+        "$comment": "missing details. Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/138346543/nenOrder",
+        "type": "null"
+    },
+    "nenFamilyNumbers": {
+        "type": "array",
+        "description": "only for fit gap NEN Connect! Will not be populated after NEN Connect is phased out",
+        "deprecated": true,
+        "items": {
+            "$ref": "./NenIdentifiers.json#/definitions/nenFamilyNumber"
+        },
+        "minItems": 0,
+        "maxItems": 50,
+        "uniqueItems": false
+    },
+    "nenFamilyAdmins": {
+        "type": "array",
+        "items": {
+            "type": "object",
+            "properties": {
+                "familyAdmin": {
+                    "$ref": "./NenIdentifiers.json#/definitions/nenFamilyAdmin"
+                },
+                "familyNumber": {
+                    "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/141656093/Why+have+a+nenFamilyTopic+and+a+nenFamilyAdmin. From the diagram it seems the 'admin' links back to a part of the family tree",
+                    "$ref": "#/properties/nenFamilyNumbers/items"
+                },
+                "nenNumberOwner": {
+                    "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/181141538/nenNumberOwner",
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 64,
+                    "description": "The acronym or name of an organization, partnership or group of SDOs that orginate a project, standard or publication. See also for NSIO: https://www.niso-sts.org/TagLibrary/niso-sts-TL-1-0-html/element/originator.html. Open-ended list of values. Representation: Acronym.",
+                    "examples": [
+                        "NEN", "CEN", "CENELEC", "CEN/CENELEC", "IEC", "ISO", "ISO/IEC", "ISO/IEC/IEEE", "IEC/IEEE", "IDF", "ECMA", "IEEE", "ASTM"
+                    ]
+                },
+                "nenConnectId": {
+                    "deprecated": true,
+                    "type": "string",
+                    "description": "Represents the family IDs that are currently used in NEN Connect",
+                    "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/143753247/nenNenConnectId"
+                },
+                "nenReplacedBy": {
+                    "$ref": "./NenIdentifiers.json#/definitions/nenFamilyAdmin"
+                },
+                "nenReplaces": {
+                    "$ref": "./NenIdentifiers.json#/definitions/nenFamilyAdmin"
+                },
+                "references": {
+                    "type": "object",
+                    "properties": {
+                        "projects": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "./NenIdentifiers.json#/definitions/nenProjectId" 
+                            },
+                            "minItems": 1,
+                            "maxItems": 24
+                        },
+                        "committee": {
+                            "$ref": "./NenIdentifiers.json#/definitions/nenCommitteeId"
+                        }                        
+                    },
+                    "additionalProperties": false 
+                }
+            },
+            "additionalProperties": false, 
+            "required": []
+        },
+        "minItems": 0,
+        "maxItems": 24
+    },
+    "nenIcsCodes": {
+        "type": "object",
+        "properties": {
+            "codeId": {
+
+            },
+            "code": {
+
+            },
+            "details": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "language": {
+                            "$ref": "./NenDefinitions.json#/definitions/isoLanguageCode-1"
+                        },
+                        "localTitle": {
+                            "description": "The main title of the code.",
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 256,
+                            "examples": [
+                                ""
+                            ]
+                        },
+                        "localScopeReference": {
+
+                        },
+                        "localScopeDescription": {
+
+                        },
+                        "localScope": {
+
+                        }
+                    },
+                    "required": ["language"]
+                },
+                "uniqueItems": true
+            }
+        }
+    },
+    "nenSustainableGoals": {
+        "type": "object",
+        "properties": {
+            "reference": {
+
+            },
+            "title": {
+
+            }
+        }
+    },
+    "references": {
+        "type": "object",
+        "properties": {
+            "family"
+        }
+    }
+  },
+  "required": ["nenFamilyId"],
+  "additionalProperties": false
+}

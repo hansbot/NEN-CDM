@@ -255,7 +255,7 @@
       "type": "string",
       "maxLength": 15,
       "format": "urn",
-      "pattern": "^nen:fam:[0-9]{7}+$",
+      "pattern": "^nl:nen:fam:[0-9]{7}|nen:fam:[0-9]{7}$",
       "description": "NEN Family URN",
       "comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/268009511/Value+lists#Naming-convention-NEN-urn%E2%80%99s"
     },
@@ -263,7 +263,7 @@
       "type": "string",
       "maxLength": 15,
       "format": "urn",
-      "pattern": "^nen:proj:[0-9]{7}+$",
+      "pattern": "^nl:nen:proj:[0-9]{7}|nen:proj:[0-9]{7}$",
       "description": "NEN Project URN",
       "comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/268009511/Value+lists#Naming-convention-NEN-urn%E2%80%99s"
     },
@@ -374,8 +374,8 @@
     },
     "publicationURN": {
       "oneOf": [
-        {"$ref": "#/nenPublicationURN"},
-        {"$ref": "#/intPubURN"}
+        {"$ref": "#/definitions/nenPublicationURN"},
+        {"$ref": "#/definitions/intPublicationURN"}
       ]
     },
     "publicationTypes": {

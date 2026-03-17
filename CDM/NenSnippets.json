@@ -40,9 +40,9 @@
         "type": "string",
         "$comment": "to be redefined as array. copied from 'cen-publications.yaml'. pattern not consistent with description. Also, relation in metamodel is to nenFamily, not nenProject.",
         "examples": [
-        "urn:nen:committee:12345"
+        "nl:nen:committee:12345"
         ],
-        "pattern": "^urn:nen:committee:[0-9]+$"
+        "pattern": "^nen:committee:[0-9]+|nl:nen:committee:[0-9]+$"
     },
     "nenProjectRelationType": {
         "description": "project relation type, exact 'value'. (i.e. projectRelationType=ADOPTED_FROM&projectRelationType=JOINED_WORK_ITEM&projectRelationType=VIENNA_AGREEMENT)",

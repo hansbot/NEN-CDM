@@ -16,14 +16,16 @@ tags:
     description: Collection and item resource for Standard Projects
   - name: Publication
     description: Collection and item resource for Standard Publications
-  - name: ResourceItem
+  - name: ReleaseItem
     description: Collection and item resource for Standard Resource Items
   - name: Healthcheck
     description: to verify if the service is up and running healthily
 paths:
   /health:
     get:
-      description: Check the status of the service. Returns UP or DOWN with the time of the check.
+      description: |
+        Check the status of the service. Returns UP or DOWN with the time of the check.
+        $comment: to be discussed what health is being checked; the gateway health, or of all the services 'behind' the gateway
       tags:
         - Healthcheck
       summary: Healthstatus service
@@ -40,6 +42,16 @@ paths:
             application/json:
               schema:
                 $ref: './NenOasFragments.json#/schemas/healthStatus'
+        '400':
+          $ref: './NenOasFragments.json#/responses/400'
+        '401':
+          $ref: './NenOasFragments.json#/responses/401'
+        '403':
+          $ref: './NenOasFragments.json#/responses/403'
+        '408':
+          $ref: './NenOasFragments.json#/responses/408'
+        '429':
+          $ref: './NenOasFragments.json#/responses/429'
         '500':
           $ref: './NenOasFragments.json#/responses/500'
         '503':
@@ -48,56 +60,65 @@ paths:
           $ref: './NenOasFragments.json#/responses/504'
       security:
         - apiKey: []
+        - clientCredentials: []
+        - mutualTLS: []
+  /families:
+  /families/{familyId}:
   /projects:
     get:
-      description: List of projects, filtered by query parameters, sorted by projectId
+      description: List of projects, filtered by query parameters, sorted by updatedAt (oldest first)
       operationId: listProjects
       summary: List projects
       tags:
         - Project
       parameters:
-        - name: from
-          in: query
-          description: Startingpoint in time for the collection of updated pro
-          required: false
-          schema:
-            $ref: '../CDM/NenDefinitions.json#/definitions/isoDateTimeExt'
-        - name: maxNumber
-          in: query
-          description: Maximum number of results in the collection
-          required: true
-          schema:
-            type: integer
-            minimum: 1
+        - $ref: './NenOasFragments.json#/parameters/fromDate'
+        - $ref: './NenOasFragments.json#/parameters/maxNumberOfItems'
         - $ref: './NenOasFragments.json#/parameters/correlationId'
       responses:
         '200':
-          description: Project details
+          description: Project list
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  additionalProperties: false
-                  properties:
-                    nenProjectId:
-                      $ref: '../CDM/NenIdentifiers.json#/definitions/nenProjectId'
-                    updatedAt:
-                      $ref: '../CDM/NenProject_V0.9.0.json#/properties/updatedAt'
+                $ref: '#/components/schemas/projectList'
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/headers/correlationId'
+        '206':
+          description: Partial project list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/projectList'
           headers:
             X-Correlation-Id:
               $ref: './NenOasFragments.json#/headers/correlationId'
             X-Next:
-              description: query for the subsequent collection
-              required: true
-              schema:
-                type: string
-                format: uri
-                example: 'https://api.nen.nl/api/norms/publication/v1/projects?from=2026-02-28T14:30:00Z&maxNumber=100'
+              $ref: './NenOasFragments.json#/headers/next'
+        '400':
+          $ref: './NenOasFragments.json#/responses/400'
+        '401':
+          $ref: './NenOasFragments.json#/responses/401'
+        '403':
+          $ref: './NenOasFragments.json#/responses/403'
+        '408':
+          $ref: './NenOasFragments.json#/responses/408'
+        '429':
+          $ref: './NenOasFragments.json#/responses/429'
+        '500':
+          $ref: './NenOasFragments.json#/responses/500'
+        '503':
+          $ref: './NenOasFragments.json#/responses/503'
+        '504':
+          $ref: './NenOasFragments.json#/responses/504'
+      security:
+        - apiKey: []
+        - clientCredentials: []
+        - mutualTLS: []
   /projects/{projectId}:
     get:
-      description: Retrieve NEN project with details
+      description: Retrieve NEN project with details if its eTag value has changed or if no eTag value is given
       operationId: getProjectById
       tags:
         - Project
@@ -110,6 +131,7 @@ paths:
             $ref: '../CDM/NenIdentifiers.json#/definitions/nenProjectId'
           description: Unique ID of the NEN project
         - $ref: './NenOasFragments.json#/parameters/correlationId'
+        - $ref: './NenOasFragments.json#/parameters/ifChanged'
       responses:
         '200':
           description: Project details
@@ -119,15 +141,283 @@ paths:
                 $ref: '../CDM/NenProject_V0.9.0.json#'
           headers:
             X-Correlation-Id:
-              $ref: './NenOasFragments.json#/parameters/correlationId'
+              $ref: './NenOasFragments.json#/headers/correlationId'
+            ETag:
+              $ref: './NenOasFragments.json#/headers/eTag'
+        '304':
+          $ref: './NenOasFragments.json#/responses/304'
+        '500':
+          $ref: './NenOasFragments.json#/responses/500'
+        '503':
+          $ref: './NenOasFragments.json#/responses/503'
+        '504':
+          $ref: './NenOasFragments.json#/responses/504'
+      security:
+        - apiKey: []
+        - clientCredentials: []
+        - mutualTLS: []
+  /publications:
+    get:
+      description: List of publications, filtered by query parameters, sorted by sorted by updatedAt (oldest first)
+      operationId: listPublications
+      summary: List publications
+      tags:
+        - Publication
+      parameters:
+        - $ref: '#/components/parameters/familyFilter'
+        - $ref: '#/components/parameters/projectFilter'
+        - $ref: './NenOasFragments.json#/parameters/fromDate'
+        - $ref: './NenOasFragments.json#/parameters/maxNumberOfItems'
+        - $ref: './NenOasFragments.json#/parameters/correlationId'
+      responses:
+        '200':
+          description: Publication list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/publicationList'
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/headers/correlationId'
+        '206':
+          description: Partial publication list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/publicationList'
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/headers/correlationId'
+            X-Next:
+              $ref: './NenOasFragments.json#/headers/next'
+        '400':
+          $ref: './NenOasFragments.json#/responses/400'
+        '401':
+          $ref: './NenOasFragments.json#/responses/401'
+        '403':
+          $ref: './NenOasFragments.json#/responses/403'
+        '408':
+          $ref: './NenOasFragments.json#/responses/408'
+        '429':
+          $ref: './NenOasFragments.json#/responses/429'
+        '500':
+          $ref: './NenOasFragments.json#/responses/500'
+        '503':
+          $ref: './NenOasFragments.json#/responses/503'
+        '504':
+          $ref: './NenOasFragments.json#/responses/504'
+      security:
+        - apiKey: []
+        - clientCredentials: []
+        - mutualTLS: []
+  /publications/{publicationId}:
+    get:
+      description: Retrieve NEN publication with details if its eTag value has changed or if no eTag value is given
+      operationId: getPublicationById
+      tags:
+        - Project
+      summary: Retrieve publication by Id
+      parameters:
+        - name: publicationId
+          in: path
+          required: true
+          schema:
+            $ref: '../CDM/NenIdentifiers.json#/definitions/nenPublicationId'
+          description: Unique ID of the NEN publication
+        - $ref: './NenOasFragments.json#/parameters/correlationId'
+        - $ref: './NenOasFragments.json#/parameters/ifChanged'
+      responses:
+        '200':
+          description: Project details
+          content:
+            application/json:
+              schema:
+                $ref: '../CDM/NenProject_V0.9.0.json#'
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/headers/correlationId'
+            ETag:
+              $ref: './NenOasFragments.json#/headers/eTag'
+        '304':
+          $ref: './NenOasFragments.json#/responses/304'
+        '500':
+          $ref: './NenOasFragments.json#/responses/500'
+        '503':
+          $ref: './NenOasFragments.json#/responses/503'
+        '504':
+          $ref: './NenOasFragments.json#/responses/504'
+      security:
+        - apiKey: []
+        - clientCredentials: []
+        - mutualTLS: []
+  /releaseItems:
+    get:
+      description: List of release items, filtered by query parameters, sorted by sorted by updatedAt (oldest first)
+      operationId: listReleaseItems
+      summary: List of release items
+      tags:
+        - ReleaseItem
+      parameters:
+        - $ref: '#/components/parameters/familyFilter'
+        - $ref: '#/components/parameters/projectFilter'
+        - $ref: '#/components/parameters/publicationFilter'
+        - $ref: './NenOasFragments.json#/parameters/fromDate'
+        - $ref: './NenOasFragments.json#/parameters/maxNumberOfItems'
+        - $ref: './NenOasFragments.json#/parameters/correlationId'
+      responses:
+        '200':
+          description: Release item list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/releaseItemList'
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/headers/correlationId'
+        '206':
+          description: Partial publication list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/publicationList'
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/headers/correlationId'
+            X-Next:
+              $ref: './NenOasFragments.json#/headers/next'
+        '400':
+          $ref: './NenOasFragments.json#/responses/400'
+        '401':
+          $ref: './NenOasFragments.json#/responses/401'
+        '403':
+          $ref: './NenOasFragments.json#/responses/403'
+        '408':
+          $ref: './NenOasFragments.json#/responses/408'
+        '429':
+          $ref: './NenOasFragments.json#/responses/429'
+        '500':
+          $ref: './NenOasFragments.json#/responses/500'
+        '503':
+          $ref: './NenOasFragments.json#/responses/503'
+        '504':
+          $ref: './NenOasFragments.json#/responses/504'
+      security:
+        - apiKey: []
+        - clientCredentials: []
+        - mutualTLS: []
+  /releaseItems/{contentRefId}:
+    get:
+      description: Retrieve NEN release item with details if its eTag value has changed or if no eTag value is given
+      operationId: getReleaseItemById
+      tags:
+        - ReleaseItem
+      summary: Retrieve release item by Id
+      parameters:
+        - name: contentRefId
+          in: path
+          required: true
+          schema:
+            $ref: '../CDM/NenIdentifiers.json#/definitions/nenContentRefId'
+          description: Unique ID of the NEN release item
+        - $ref: './NenOasFragments.json#/parameters/correlationId'
+        - $ref: './NenOasFragments.json#/parameters/ifChanged'
+      responses:
+        '200':
+          description: Release item details
+          content:
+            application/json:
+              schema:
+                $ref: '../CDM/NenReleaseItem_V0.9.0.json#'
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/headers/correlationId'
+            ETag:
+              $ref: './NenOasFragments.json#/headers/eTag'
+        '304':
+          $ref: './NenOasFragments.json#/responses/304'
+        '500':
+          $ref: './NenOasFragments.json#/responses/500'
+        '503':
+          $ref: './NenOasFragments.json#/responses/503'
+        '504':
+          $ref: './NenOasFragments.json#/responses/504'
+      security:
+        - apiKey: []
+        - clientCredentials: []
+        - mutualTLS: []
 servers:
   - url: https://api{stage}nen.nl/api/norms/v1
-    description: Production environment. Please note that naming is provisional, please update with final domain and hostname
+    description: Multiple environments for different stages of development. Note that naming is provisional, please update with final domain and hostname
     variables:
       stage:
         default: .
         description: a descriptor for the target environment, such as .tst. .acc. and .demo.
 components:
+  schemas:
+    projectList:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          nenFamilyId:
+            $ref: '../CDM/NenIdentifiers.json#/definitions/nenFamilyId'
+          nenProjectId:
+            $ref: '../CDM/NenIdentifiers.json#/definitions/nenProjectId'
+          updatedAt:
+            $ref: '../CDM/NenProject_V0.9.0.json#/properties/updatedAt'
+    publicationList:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          nenFamilyId:
+            $ref: '../CDM/NenIdentifiers.json#/definitions/nenFamilyId'
+          nenProjecId:
+            $ref: '../CDM/NenIdentifiers.json#/definitions/nenProjectId'
+          nenPublicationId:
+            $ref: '../CDM/NenIdentifiers.json#/definitions/nenPublicationId'
+          updatedAt:
+            $ref: '../CDM/NenProject_V0.9.0.json#/properties/updatedAt'
+    releaseItemList:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          nenFamilyId:
+            $ref: '../CDM/NenIdentifiers.json#/definitions/nenFamilyId'
+          nenProjecId:
+            $ref: '../CDM/NenIdentifiers.json#/definitions/nenProjectId'
+          nenPublicationId:
+            $ref: '../CDM/NenIdentifiers.json#/definitions/nenPublicationId'
+          nenReleaseItemId:
+            $ref: '../CDM/NenIdentifiers.json#/definitions/nenContentRefId'
+          updatedAt:
+            $ref: '../CDM/NenProject_V0.9.0.json#/properties/updatedAt'
+  parameters:
+    familyFilter:
+      name: family
+      in: query
+      description: filter collection resources for a specific family
+      required: false
+      schema:
+        $ref: '../CDM/NenIdentifiers.json#/definitions/nenFamilyId'
+    projectFilter:
+      name: project
+      in: query
+      description: filter collection resources for a specific project
+      required: false
+      schema:
+        $ref: '../CDM/NenIdentifiers.json#/definitions/nenProjectId'
+    publicationFilter:
+      name: publication
+      in: query
+      description: filter collection resources for a specific publications
+      required: false
+      schema:
+        $ref: '../CDM/NenIdentifiers.json#/definitions/nenPublicationId'
   securitySchemes:
     clientCredentials:
       $ref: './NenOasFragments.json#/securitySchemes/clientCredentials'
@@ -135,14 +425,5 @@ components:
       $ref: './NenOasFragments.json#/securitySchemes/jwtBearer'
     apiKey:
       $ref: './NenOasFragments.json#/securitySchemes/apiKey'
-    oauth2:
-      type: oauth2
-      flows:
-        authorizationCode:
-          authorizationUrl: "https://auth.example.com/authorize"
-          tokenUrl: "https://auth.example.com/token"
-          refreshUrl: "https://auth.example.com/token"
-          scopes:
-            "read:resources": "Read access to resources"
-            "write:resources": "Write access to resources"
-            "admin": "Full admin access"
+    mutualTLS:
+      $ref: './NenOasFragments.json#/securitySchemes/mutualTLS'

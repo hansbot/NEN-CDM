@@ -24,15 +24,15 @@
       "description": "URN for the NEN project, following a specific format. Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/128057507/nenProjectId.",
       "type": "string",
       "maxLength": 20,
-      "pattern": "^nl:nen:proj:[0-9]+$",
+      "pattern": "^nl:nen:proj:[0-9]+|nen:proj:[0-9]+$",
       "examples": [
         "nl:nen:proj:1234567", "nl:nen:proj:86733"
       ]
     },
     "nenOriginator": {
       "type": "string",
-      "$comment": "ref hapi:docu:021. Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/135495700/nenOriginator+-+deprecated",
       "deprecated": true,
+      "$comment": "ref hapi:docu:021. Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/135495700/nenOriginator+-+deprecated",
       "minLength": 2,
       "maxLength": 64,
       "description": "The acronym or name of an organization, partnership or group of SDOs that orginate a project, standard or publication. See also for NSIO: https://www.niso-sts.org/TagLibrary/niso-sts-TL-1-0-html/element/originator.html. Open-ended list of values. Representation: Acronym.",
@@ -241,9 +241,9 @@
           "required": ["projectId"]
           }
         },
-        "nenFamily":  {
-          "$comment": "removed array to conform to the cardinality as designed in the UML metamodel for the normenbank",
-          "$ref": "./NenIdentifiers.json#/definitions/nenFamilyId"
+        "nenFamilyAdmin":  {
+          "$comment": "removed array to conform to the cardinality as designed in the UML metamodel for the normenbank. Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/141656093/Why+have+a+nenFamilyTopic+and+a+nenFamilyAdmin.",
+          "$ref": "./NenIdentifiers.json#/definitions/nenFamilyAdmin"
           }
         },
       "additionalProperties": false
