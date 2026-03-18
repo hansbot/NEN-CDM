@@ -41,8 +41,8 @@
       "type": "string",
       "description": "Additional specification to declare the correct XML Variant",
       "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/137789491/nenReleaseItemFormatVariant",
-
-    },        
+      "examples": ["ISOSTS", "NISOSTS"]
+    },
     "numPages": {
       "type": "integer",
       "description": "Approximate number of pages of the content at the URL, if applicable (e.g., for PDF documents).",
@@ -52,6 +52,16 @@
       ],
       "minimum": 1,
       "maximum": 9999
+    },
+    "version": {
+      "$comment": "hapi:docu:062",
+      "type": "integer",
+      "description": "Version number of the NEN release item, starting at 1 and incrementing by 1 for each new version.",
+      "examples": [
+        1, 2, 3
+      ],
+      "minimum": 1,
+      "exclusiveMaximum": 1000
     },
     "releaseDate": {
       "$ref": "./NenDefinitions.json#/definitions/isoCalendarDate",
@@ -72,8 +82,8 @@
       "description": "The item is or isn't part of a multilingual publication",
       "$comment": "From the description it seems more senisible to manage this attribute at the publication level"
     },
-    "url": {
-      "description": "URL where the content of the NEN release item can be accessed.",
+    "contentRef": {
+      "description": "URL where the content of the NEN release item can be accessed. Normally all releaseItems do have content, but there are exceptions when: the content is not available online (a physical-only, paper publication), or the content is online but not downloadable (an online database, eg. ISO 7010). Therefore this element is optional.",
       "$ref": "./NenDefinitions.json#/definitions/url"
     },
     "fileName": {
@@ -81,6 +91,14 @@
       "maxLength": 256,
       "description": "string the name without the “dot”and extension of the file to be saved",
       "$comment": "No pattern added; unsure of naming convention used. Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/144670901/nenContentRefFileName+-+moved+from+ContentRef+container."
+    },
+    "mimeType": {
+      "type": "string",
+      "description": "MIME type of the content at the URL.",
+      "examples": [
+        "application/pdf", "text/html", "application/xml"
+      ],
+      "maxLength": 255
     },
     "contentLength": {
       "type": "integer",
@@ -100,8 +118,11 @@
       ],
       "maxLength": 255
     },
+    "updatedAt": {
+      "$ref": "./NenDefinitions.json#/definitions/updatedAt"
+    },
     "references": {
-      "nenPublicationId": {
+      "publication": {
         "$ref": "./NenIdentifiers.json#/definitions/nenPublicationId",
         "$comment": "can be used as path parameter in link definition in the API"
       },

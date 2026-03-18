@@ -9,32 +9,6 @@
         "2B"
         ]
     },
-    "stageCode": {
-        "oneOf": [
-        {
-            "harmonizedStageCode": {
-            "$comment": "copied from 'cen-publications.yaml'.",
-            "description": "harmonizedStageCode (i.e. 60.60) cannot be used with stageCode. This will match any 'CURRENT' stage, not a 'CLOSED' stage.",
-            "type": "string",
-            "examples": [
-                "00.60.0000", "40.97.0009", "90.00.0000"
-            ],
-            "pattern": "^[0-9]{2}\\.[0-9]{2}\\.[0-9]{4}$"
-            }
-        },
-        {
-            "stageCode": {
-            "type": "string",
-            "$comment": "copied from 'cen-publications.yaml'.",
-            "description": "stageCode (i.e. 6060) cannot be used with harmonizedStageCode",
-            "examples": [
-                "6060"
-            ],
-            "pattern": "^[0-9]{4}$"
-            }
-        }
-        ]
-    },
     "nenCommitteeUrn": {
         "description": "URN for the NEN committee associated with the project, following a specific format (i.e. committeeUrn=iso:committee:54158&committeeUrn=iso:committee:48138&committeeUrn=iso:committee:4559).",
         "type": "string",
@@ -103,18 +77,10 @@
         "maxLength": 64,
         "description": "The acronym or name of an organization, partnership or group of SDOs that orginate a project, standard or publication. See also for NSIO: https://www.niso-sts.org/TagLibrary/niso-sts-TL-1-0-html/element/originator.html Open-ended list of values. Representation: Acronym. Example(s): CEN, CENELEC, CEN/CENELEC, IEC, ISO, ISO/IEC, ISO/IEC/IEEE, IEC/IEEE, IDF, ECMA, IEEE, ASTM, etc."
     },
-    "intPublicationURNs": {
-        "type": "array",
-        "items": {
-        "$ref": "#/definitions/publicationURNs"
-        },
-        "description": "Array of URNs related to the international publication. Each item in the array is a URN that identifies an international publication.",
-        "minItems": 1,
-        "maxItems": 5
-    },
     "releaseItemURN": {
       "description": "URN for the NEN release item, following a specific format (i.e. urn:nen:releaseItem:12345).",
       "type": "string",
+      "$comment": "not mentioned on https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/268009511/Value+lists#Naming-convention-NEN-urn%E2%80%99s",
       "pattern": "^urn:nen:releaseItem:[0-9]+$",
       "examples": [
         "urn:nen:releaseItem:12345"
@@ -147,29 +113,9 @@
         "minItems": 1,
         "maxItems": 9
     },
-    "stdTypeType": {
-        "$ref": "#/definitions/publicationTypes"
-    },
     "contentRef": {
       "type": "object",
       "description": "The reference to how / where to download the content of a releaseItem. Normally all releaseItems do have content, but there are exceptions when: the content is not available online (a physical-only, paper publication), or the content is online but not downloadable (an online database, eg. ISO 7010). Therefore this element is optional.",
-    },
-    "mimeType": {
-      "type": "string",
-      "description": "MIME type of the content at the URL.",
-      "examples": [
-        "application/pdf", "text/html", "application/xml"
-      ],
-      "maxLength": 255
-    },
-    "version": {
-      "$comment": "hapi:docu:062",
-      "type": "integer",
-      "description": "Version number of the NEN release item, starting at 1 and incrementing by 1 for each new version.",
-      "examples": [
-        1, 2, 3
-      ],
-      "minimum": 1,
-      "exclusiveMaximum": 1000
+
     }
 }

@@ -39,9 +39,11 @@
         "0012345"
       ]
     },
-    "nenFamilyAdmin": {
+    "nenFamilyAdminId": {
       "type": "string",
       "description": "Name of the family, concatenation of an SDO and a number, seperated by a single space",
+      "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/353665154/nenFamilyAdmin",
+      "examples": ["ISO 1010"],
       "maxLength": 64,
       "pattern": "^[A-Z/]+[ ]{1}[0-9]+$"
     },

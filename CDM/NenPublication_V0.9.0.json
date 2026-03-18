@@ -3,15 +3,14 @@
   "description": "Schema for NEN Publication details",
   "title": "NenPublication Canonical Schema",
   "version": "0.9.0",
-  "$comment": "Last modified on 2026-03-06 by Hans Bot - NEN. Derived from 'NEN Content Publication V0.8.1-bundled.yaml'",
+  "$comment": "Last modified on 2026-03-18 by Hans Bot - NEN. Derived from 'NEN Content Publication V0.8.1-bundled.yaml'",
   "type": "object",
   "properties": {
     "nenPublicationId": {
-      "$ref": "./NenDefinitions.json#/definitions/nenPublicationId"
+      "$ref": "./NenIdentifiers.json#/definitions/nenPublicationId"
     },
     "nenPublicationURN": {
-      "$ref": "./NenDefinitions.json#/definitions/nenPublicationURN",
-      "$comment": "copied from 'cen-publications.yaml', ref hapi:docu:003. No internal reference, but defined in https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/268009511/Value+lists#Naming-convention-NEN-urn%E2%80%99s (adding as optional attribute nevertheless)",
+      "$ref": "./NenDefinitions.json#/definitions/nenPublicationURN"
     },
     "nenPublicationType": {
       "type": "string",
@@ -25,7 +24,7 @@
       ]
     },
     "nenCompatibilityId": {
-      "$ref": "./NenDefinitions.json#/definitions/nenCompatibilityId"
+      "$ref": "./NenIdentifiers.json#/definitions/nenCompatibilityId"
     },
     "nenLanguage": {
       "description": "Primary language of the NEN publication, represented as an ISO 639-1 code (e.g., 'en' for English, 'nl' for Dutch).",
@@ -42,6 +41,9 @@
     "nenCompensation": {
       "$ref": "./NenDefinitions.json#/definitions/nenCompensation"
     },
+    "updatedAt": {
+      "$ref": "./NenDefinitions.json#/definitions/updatedAt"
+    },
     "references":{
       "projectId": {
         "$ref": "./NenIdentifiers.json#/definitions/nenProjectId",
@@ -53,16 +55,17 @@
           "nenContentRefId": {
             "$ref": "./NenIdentifiers.json#/definitions/nenContentRefId",
             "$comment": "can be used as path parameter in link definition in the API"
-          },
+          }
+        },
         "minItems": 1,
         "maxItem": 12,
-        "unique"
-        }
+        "uniqueItems": true
       }
     }
   },
-  "required": [
-      "nenPublicationId",
-      "nenLanguage"
+  "required": [  
+    "nenPublicationId",
+    "nenLanguage",
+    "updatedAt"
   ]
 }

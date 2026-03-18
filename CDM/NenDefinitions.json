@@ -459,7 +459,7 @@
           {
           "constant": "DATA",
           "description": "Data"
-          },		
+          },
           {
           "constant": "ISP",
           "description": "International Standardized Profile"
@@ -496,6 +496,17 @@
         "+31-6-12345678", "015-2690390"
       ],
       "pattern": "^+?[0-9 -()]{10,20}$" 
+    },
+    "updatedAt": {
+      "description": "Timestamp for most recent update of the resource. Cannot be a date in the future.",
+      "$comment": "adapted from 'cen-publications.yaml'  'lastChangeTimestamp'.",
+      "expressions": {
+        "notFutureDate": {
+          "description": "lastChangeTimestamp cannot be a date in the future.",
+          "expression": "new Date(lastChangeTimestamp) <= new Date()"
+        }
+      },
+      "$ref": "#/definitions/isoDateTimeExt"
     },
     "url": {
       "type": "string",

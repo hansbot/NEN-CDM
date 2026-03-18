@@ -74,17 +74,6 @@
     "nenCompensation": {
       "$ref": "./NenDefinitions.json#/definitions/nenCompensation"
     },
-    "updatedAt": {
-      "description": "Timestamp for most recent update. Cannot be a date in the future.",
-      "$comment": "adapted from 'cen-publications.yaml'  'lastChangeTimestamp'.",
-      "$ref": "./NenDefinitions.json#/definitions/isoDateTimeExt",
-      "expressions": {
-        "notFutureDate": {
-          "description": "lastChangeTimestamp cannot be a date in the future.",
-          "expression": "new Date(lastChangeTimestamp) <= new Date()"
-        }
-      }
-    },
     "nenMainTitles": {
       "description": "Array of main title objects for the NEN project. Each main title object can contain properties such as 'title' and 'language'.",
       "type": "array",
@@ -224,8 +213,12 @@
       },
       "uniqueItems": true
     },
+    "updatedAt": {
+      "$ref": "./NenDefinitions.json#/definitions/updatedAt"
+    },
     "references": {
       "description": "Array of reference objects related to the NEN project. Prefer an array over '&' delimited strings for better structure and validation. Each reference object can contain properties such as 'reference', 'stdNumber', and 'nenCommitteeDisplayName'.",
+      "$comment": "Unsure if the projects are directly related, as in the UML model, or through a common parent familyAdmin - HBo",
       "type": "object",
       "properties": {
         "nenProjects": {
@@ -243,9 +236,9 @@
         },
         "nenFamilyAdmin":  {
           "$comment": "removed array to conform to the cardinality as designed in the UML metamodel for the normenbank. Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/141656093/Why+have+a+nenFamilyTopic+and+a+nenFamilyAdmin.",
-          "$ref": "./NenIdentifiers.json#/definitions/nenFamilyAdmin"
-          }
-        },
+          "$ref": "./NenIdentifiers.json#/definitions/nenFamilyAdminId"
+        }
+      },
       "additionalProperties": false
     }
   },
@@ -253,7 +246,8 @@
     "nenProjectId",
     "nenProjectReference",
     "references",
-    "stageCode"
+    "stageCode",
+    "updatedAt"
    ],
   "additionalProperties": false
 }

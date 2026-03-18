@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema#",
+  "description": "Schema for NEN FamilyAdmin details",
+  "title": "NenFamilyAdmin Canonical Schema",
+  "version": "0.9.0",
+  "$comment": "Last modified on 2026-03-18 by Hans Bot - NEN.",
+  "type": "object",
+  "properties": {
+    "nenFamilyAdminId": {
+        "$ref": "./NenIdentifiers.json#/definitions/nenFamilyAdminId"
+    },
+    "nenFamilyURN": {
+        "$ref": "./NenDefinitions.json#/definitions/nenFamilyURN"
+    },
+    "familyNumber": {
+        "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/141656093/Why+have+a+nenFamilyTopic+and+a+nenFamilyAdmin. From the diagram it seems the 'admin' links back to a part of the family tree",
+        "$ref": "./NenIdentifiers.json#/definitions/nenFamilyNumber"
+    },
+    "nenNumberOwner": {
+        "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/181141538/nenNumberOwner",
+        "type": "string",
+        "minLength": 2,
+        "maxLength": 64,
+        "description": "The acronym or name of an organization, partnership or group of SDOs that orginate a project, standard or publication. See also for NSIO: https://www.niso-sts.org/TagLibrary/niso-sts-TL-1-0-html/element/originator.html. Open-ended list of values. Representation: Acronym.",
+        "examples": [
+            "NEN", "CEN", "CENELEC", "CEN/CENELEC", "IEC", "ISO", "ISO/IEC", "ISO/IEC/IEEE", "IEC/IEEE", "IDF", "ECMA", "IEEE", "ASTM"
+        ]
+    },
+    "nenConnectId": {
+        "deprecated": true,
+        "type": "string",
+        "description": "Represents the family IDs that are currently used in NEN Connect",
+        "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/143753247/nenNenConnectId"
+    },
+    "nenReplacedBy": {
+        "$ref": "./NenIdentifiers.json#/definitions/nenFamilyAdminId"
+    },
+    "nenReplaces": {
+        "$ref": "./NenIdentifiers.json#/definitions/nenFamilyAdminId"
+    },
+    "updatedAt": {
+        "$ref": "./NenDefinitions.json#/definitions/updatedAt"
+    },
+    "references": {
+        "type": "object",
+        "properties": {
+            "projects": {
+                "type": "array",
+                "items": {
+                    "$ref": "./NenIdentifiers.json#/definitions/nenProjectId" 
+                },
+                "minItems": 1,
+                "maxItems": 24
+            },
+            "committee": {
+                "$ref": "./NenIdentifiers.json#/definitions/nenCommitteeId"
+            },
+            "family" : {
+                "ref": "./NenIdentifiers.json#/definitions/nenFamilyId"
+            }                     
+        },
+        "additionalProperties": false 
+    }
+  },
+  "additionalProperties": false, 
+  "required": ["familyAdminId", "updatedAt"]
+}

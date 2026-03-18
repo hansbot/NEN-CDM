@@ -168,7 +168,7 @@
       }
     },
     "next": {
-      "description": "query for the subsequent part of the collection",
+      "description": "query for the subsequent chunk of the collection",
       "required": true,
       "schema":  {
         "type": "string",

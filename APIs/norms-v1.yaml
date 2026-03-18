@@ -12,6 +12,8 @@ info:
 tags:
   - name: Family
     description: Collection and item resource for Standard Families
+  - name: FamilyAdmin
+    description: Collection and item resource for Standard FamilyAdmins
   - name: Project
     description: Collection and item resource for Standard Projects
   - name: Publication
@@ -59,38 +61,43 @@ paths:
         '504':
           $ref: './NenOasFragments.json#/responses/504'
       security:
+#       $comment: 'security is yet to be decided. To be updated later.'
         - apiKey: []
         - clientCredentials: []
         - mutualTLS: []
   /families:
-  /families/{familyId}:
-  /projects:
     get:
-      description: List of projects, filtered by query parameters, sorted by updatedAt (oldest first)
-      operationId: listProjects
-      summary: List projects
+      description: List of families, filtered by query parameters, sorted by updatedAt (oldest first)
+      operationId: listFamilies
+      summary: List of families
       tags:
-        - Project
+        - Family
       parameters:
         - $ref: './NenOasFragments.json#/parameters/fromDate'
         - $ref: './NenOasFragments.json#/parameters/maxNumberOfItems'
         - $ref: './NenOasFragments.json#/parameters/correlationId'
       responses:
         '200':
-          description: Project list
+          description: Family list
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/projectList'
+                $ref: '#/components/schemas/familyList'
+          links:
+            getFamily:
+              $ref: '#/components/links/families'
           headers:
             X-Correlation-Id:
               $ref: './NenOasFragments.json#/headers/correlationId'
         '206':
-          description: Partial project list
+          description: Partial family list
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/projectList'
+                $ref: '#/components/schemas/familyList'
+          links:
+            getFamily:
+              $ref: '#/components/links/families'
           headers:
             X-Correlation-Id:
               $ref: './NenOasFragments.json#/headers/correlationId'
@@ -112,7 +119,256 @@ paths:
           $ref: './NenOasFragments.json#/responses/503'
         '504':
           $ref: './NenOasFragments.json#/responses/504'
+      servers:
+        - url: https://example.com/poolparty/familyAPI
+          description: provisional specification for the endpoint in the source system. Please update with final values
       security:
+#       $comment: 'security is yet to be decided. To be updated later.'
+        - apiKey: []
+        - clientCredentials: []
+        - mutualTLS: []
+  /families/{familyId}:
+    get:
+      description: Retrieve NEN family with details if its eTag value has changed or if no eTag value is given
+      operationId: getFamilyById
+      tags:
+        - Family
+      summary: Retrieve family tree by Id
+      parameters:
+        - name: familyId
+          in: path
+          required: true
+          schema:
+            $ref: '../CDM/NenIdentifiers.json#/definitions/nenFamilyId'
+          description: Unique ID of the NEN family
+        - $ref: './NenOasFragments.json#/parameters/correlationId'
+        - $ref: './NenOasFragments.json#/parameters/ifChanged'
+      responses:
+        '200':
+          description: Family details
+          content:
+            application/json:
+              schema:
+                $ref: '../CDM/NenFamily_V0.9.0.json#'
+          links:
+            getFamilyAdmins:
+              operationId: getFamilyAdminById
+              parameters:
+                familyAdminId: "$response.body#/references/nenFamilyAdmins/nenFamilyAdminId"
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/headers/correlationId'
+            ETag:
+              $ref: './NenOasFragments.json#/headers/eTag'
+        '304':
+          $ref: './NenOasFragments.json#/responses/304'
+        '500':
+          $ref: './NenOasFragments.json#/responses/500'
+        '503':
+          $ref: './NenOasFragments.json#/responses/503'
+        '504':
+          $ref: './NenOasFragments.json#/responses/504'
+      servers:
+        - url: https://example.com/poolparty/familyAPI
+          description: provisional specification for the endpoint in the source system. Please update with final values
+      security:
+#       $comment: 'security is yet to be decided. To be updated later.'
+        - apiKey: []
+        - clientCredentials: []
+        - mutualTLS: []
+  /familyAdmins:
+    get:
+      description: List of familieAdmins, filtered by query parameters, sorted by updatedAt (oldest first)
+      operationId: listFamilieAdmins
+      summary: List of familyAdmins
+      tags:
+        - FamilyAdmin
+      parameters:
+        - $ref: '#/components/parameters/familyFilter'
+        - $ref: './NenOasFragments.json#/parameters/fromDate'
+        - $ref: './NenOasFragments.json#/parameters/maxNumberOfItems'
+        - $ref: './NenOasFragments.json#/parameters/correlationId'
+      responses:
+        '200':
+          description: Project list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/familyAdminList'
+          links:
+            getFamily:
+              $ref: '#/components/links/families'
+            getFamilyAdmins:
+              $ref: '#/components/links/familyAdmins'
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/headers/correlationId'
+        '206':
+          description: Partial project list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/familyAdminList'
+          links:
+            getFamily:
+              $ref: '#/components/links/families'
+            getFamilyAdmins:
+              $ref: '#/components/links/familyAdmins'
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/headers/correlationId'
+            X-Next:
+              $ref: './NenOasFragments.json#/headers/next'
+        '400':
+          $ref: './NenOasFragments.json#/responses/400'
+        '401':
+          $ref: './NenOasFragments.json#/responses/401'
+        '403':
+          $ref: './NenOasFragments.json#/responses/403'
+        '408':
+          $ref: './NenOasFragments.json#/responses/408'
+        '429':
+          $ref: './NenOasFragments.json#/responses/429'
+        '500':
+          $ref: './NenOasFragments.json#/responses/500'
+        '503':
+          $ref: './NenOasFragments.json#/responses/503'
+        '504':
+          $ref: './NenOasFragments.json#/responses/504'
+      servers:
+        - url: https://example.com/poolparty/familyAdminAPI
+          description: provisional specification for the endpoint in the source system. Please update with final values
+      security:
+#       $comment: 'security is yet to be decided. To be updated later.'
+        - apiKey: []
+        - clientCredentials: []
+        - mutualTLS: []
+  /familyAdmins/{familyAdminId}:
+    get:
+      description: Retrieve NEN familyAdmin with details if its eTag value has changed or if no eTag value is given
+      operationId: getFamilyAdminById
+      tags:
+        - FamilyAdmin
+      summary: Retrieve family subtree by AdminId
+      parameters:
+        - name: familyAdminId
+          in: path
+          required: true
+          schema:
+            $ref: '../CDM/NenIdentifiers.json#/definitions/nenFamilyAdminId'
+          description: Unique ID of the NEN family admin
+        - $ref: './NenOasFragments.json#/parameters/correlationId'
+        - $ref: './NenOasFragments.json#/parameters/ifChanged'
+      responses:
+        '200':
+          description: Family admin details
+          content:
+            application/json:
+              schema:
+                $ref: '../CDM/NenFamilyAdmin_V0.9.0.json#'
+          links:
+            getProjecs:
+              operationId: getProjectById
+              parameters:
+                familyAdminId: "$response.body#/references/projects/nenProjectId"
+            getCommittee:
+              operationRef: "https://api.example.com/committee/v1/committee/get"
+              parameters:
+                familyAdminId: "$response.body#/references/committee"
+            getFamily:
+              operationId: getFamilyById
+              parameters:
+                familyAdminId: "$response.body#/references/family"
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/headers/correlationId'
+            ETag:
+              $ref: './NenOasFragments.json#/headers/eTag'
+        '304':
+          $ref: './NenOasFragments.json#/responses/304'
+        '500':
+          $ref: './NenOasFragments.json#/responses/500'
+        '503':
+          $ref: './NenOasFragments.json#/responses/503'
+        '504':
+          $ref: './NenOasFragments.json#/responses/504'
+      servers:
+        - url: https://example.com/poolparty/familyAdminAPI
+          description: provisional specification for the endpoint in the source system. Please update with final values
+      security:
+#       $comment: 'security is yet to be decided. To be updated later.'
+        - apiKey: []
+        - clientCredentials: []
+        - mutualTLS: []
+  /projects:
+    get:
+      description: List of projects, filtered by query parameters, sorted by updatedAt (oldest first)
+      operationId: listProjects
+      summary: List projects
+      tags:
+        - Project
+      parameters:
+        - $ref: '#/components/parameters/familyFilter'
+        - $ref: '#/components/parameters/familyAdminFilter'
+        - $ref: './NenOasFragments.json#/parameters/fromDate'
+        - $ref: './NenOasFragments.json#/parameters/maxNumberOfItems'
+        - $ref: './NenOasFragments.json#/parameters/correlationId'
+      responses:
+        '200':
+          description: Project list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/projectList'
+          links:
+            getFamily:
+              $ref: '#/components/links/families'
+            getFamilyAdmin:
+              $ref: '#/components/links/familyAdmins'
+            getProjects:
+              $ref: '#/components/links/projects'
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/headers/correlationId'
+        '206':
+          description: Partial project list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/projectList'
+          links:
+            getFamily:
+              $ref: '#/components/links/families'
+            getFamilyAdmin:
+              $ref: '#/components/links/familyAdmins'
+            getProjects:
+              $ref: '#/components/links/projects'
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/headers/correlationId'
+            X-Next:
+              $ref: './NenOasFragments.json#/headers/next'
+        '400':
+          $ref: './NenOasFragments.json#/responses/400'
+        '401':
+          $ref: './NenOasFragments.json#/responses/401'
+        '403':
+          $ref: './NenOasFragments.json#/responses/403'
+        '408':
+          $ref: './NenOasFragments.json#/responses/408'
+        '429':
+          $ref: './NenOasFragments.json#/responses/429'
+        '500':
+          $ref: './NenOasFragments.json#/responses/500'
+        '503':
+          $ref: './NenOasFragments.json#/responses/503'
+        '504':
+          $ref: './NenOasFragments.json#/responses/504'
+      servers:
+        - url: https://example.com/sitefusion/projectAPI
+          description: provisional specification for the endpoint in the source system. Please update with final values
+      security:
+#       $comment: 'security is yet to be decided. To be updated later.'
         - apiKey: []
         - clientCredentials: []
         - mutualTLS: []
@@ -139,6 +395,19 @@ paths:
             application/json:
               schema:
                 $ref: '../CDM/NenProject_V0.9.0.json#'
+          links:
+            getFamily:
+              operationId: getFamilyById
+              parameters:
+                familyAdminId: "$response.body#/references/family"
+            getProject:
+              operationId: getProjectById
+              parameters:
+                familyAdminId: "$response.body#/references/committee"
+            getPublications:
+              operationId: getPublicationById
+              parameters:
+                familyAdminId: "$response.body#/nenStages/nenPublicationId"
           headers:
             X-Correlation-Id:
               $ref: './NenOasFragments.json#/headers/correlationId'
@@ -152,7 +421,11 @@ paths:
           $ref: './NenOasFragments.json#/responses/503'
         '504':
           $ref: './NenOasFragments.json#/responses/504'
+      servers:
+        - url: https://example.com/sitefusion/projectAPI
+          description: provisional specification for the endpoint in the source system. Please update with final values
       security:
+#       $comment: 'security is yet to be decided. To be updated later.'
         - apiKey: []
         - clientCredentials: []
         - mutualTLS: []
@@ -165,6 +438,7 @@ paths:
         - Publication
       parameters:
         - $ref: '#/components/parameters/familyFilter'
+        - $ref: '#/components/parameters/familyAdminFilter'
         - $ref: '#/components/parameters/projectFilter'
         - $ref: './NenOasFragments.json#/parameters/fromDate'
         - $ref: './NenOasFragments.json#/parameters/maxNumberOfItems'
@@ -176,6 +450,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/publicationList'
+          links:
+            getFamilies:
+              $ref: '#/components/links/families'
+            getFamilyAdmins:
+              $ref: '#/components/links/familyAdmins'
+            getProjects:
+              $ref: '#/components/links/projects'
+            getPublications:
+              $ref: '#/components/links/publications'
           headers:
             X-Correlation-Id:
               $ref: './NenOasFragments.json#/headers/correlationId'
@@ -185,6 +468,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/publicationList'
+          links:
+            getFamilie:
+              $ref: '#/components/links/families'
+            getFamilyAdmins:
+              $ref: '#/components/links/familyAdmins'
+            getProjects:
+              $ref: '#/components/links/projects'
+            getPublications:
+              $ref: '#/components/links/publications'
           headers:
             X-Correlation-Id:
               $ref: './NenOasFragments.json#/headers/correlationId'
@@ -206,7 +498,11 @@ paths:
           $ref: './NenOasFragments.json#/responses/503'
         '504':
           $ref: './NenOasFragments.json#/responses/504'
+      servers:
+        - url: https://example.com/sitefusion/publicationAPI
+          description: provisional specification for the endpoint in the source system. Please update with final values
       security:
+#       $comment: 'security is yet to be decided. To be updated later.'
         - apiKey: []
         - clientCredentials: []
         - mutualTLS: []
@@ -233,6 +529,15 @@ paths:
             application/json:
               schema:
                 $ref: '../CDM/NenProject_V0.9.0.json#'
+          links:
+            getProject:
+              operationId: getProjectById
+              parameters:
+                projectId: "$response.body#/references/projectid"
+            getReleaseItems:
+              operationId: getReleaseItemById
+              parameters:
+                familyAdminId: "$response.body#/references/nenReleaseItems/nenContentRefId"
           headers:
             X-Correlation-Id:
               $ref: './NenOasFragments.json#/headers/correlationId'
@@ -246,7 +551,11 @@ paths:
           $ref: './NenOasFragments.json#/responses/503'
         '504':
           $ref: './NenOasFragments.json#/responses/504'
+      servers:
+        - url: https://example.com/sitefusion/publicationAPI
+          description: provisional specification for the endpoint in the source system. Please update with final values
       security:
+#       $comment: 'security is yet to be decided. To be updated later.'
         - apiKey: []
         - clientCredentials: []
         - mutualTLS: []
@@ -259,6 +568,7 @@ paths:
         - ReleaseItem
       parameters:
         - $ref: '#/components/parameters/familyFilter'
+        - $ref: '#/components/parameters/familyAdminFilter'
         - $ref: '#/components/parameters/projectFilter'
         - $ref: '#/components/parameters/publicationFilter'
         - $ref: './NenOasFragments.json#/parameters/fromDate'
@@ -271,6 +581,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/releaseItemList'
+          links:
+            getFamilies:
+              $ref: '#/components/links/families'
+            getFamilyAdmins:
+              $ref: '#/components/links/familyAdmins'
+            getProjects:
+              $ref: '#/components/links/projects'
+            getPublications:
+              $ref: '#/components/links/publications'
+            getReleaseItems:
+              $ref: '#/components/links/releaseItems'
           headers:
             X-Correlation-Id:
               $ref: './NenOasFragments.json#/headers/correlationId'
@@ -280,6 +601,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/publicationList'
+          links:
+            getFamilies:
+              $ref: '#/components/links/families'
+            getFamilyAdmins:
+              $ref: '#/components/links/familyAdmins'
+            getProjects:
+              $ref: '#/components/links/projects'
+            getPublications:
+              $ref: '#/components/links/publications'
+            getReleaseItems:
+              $ref: '#/components/links/releaseItems'
           headers:
             X-Correlation-Id:
               $ref: './NenOasFragments.json#/headers/correlationId'
@@ -301,7 +633,11 @@ paths:
           $ref: './NenOasFragments.json#/responses/503'
         '504':
           $ref: './NenOasFragments.json#/responses/504'
+      servers:
+        - url: https://example.com/sitefusion/releaseItemAPI
+          description: provisional specification for the endpoint in the source system. Please update with final values
       security:
+#       $comment: 'security is yet to be decided. To be updated later.'
         - apiKey: []
         - clientCredentials: []
         - mutualTLS: []
@@ -328,6 +664,11 @@ paths:
             application/json:
               schema:
                 $ref: '../CDM/NenReleaseItem_V0.9.0.json#'
+          links:
+            getPublication:
+              operationId: getPublicationById
+              parameters:
+                projectId: "$response.body#/references/publication"
           headers:
             X-Correlation-Id:
               $ref: './NenOasFragments.json#/headers/correlationId'
@@ -341,19 +682,45 @@ paths:
           $ref: './NenOasFragments.json#/responses/503'
         '504':
           $ref: './NenOasFragments.json#/responses/504'
+      servers:
+        - url: https://example.com/sitefusion/releaseItemAPI
+          description: provisional specification for the endpoint in the source system. Please update with final values
       security:
+#       $comment: 'security is yet to be decided. To be updated later.'
         - apiKey: []
         - clientCredentials: []
         - mutualTLS: []
 servers:
-  - url: https://api{stage}nen.nl/api/norms/v1
-    description: Multiple environments for different stages of development. Note that naming is provisional, please update with final domain and hostname
+  - url: https://api.{stage}nen.nl/apis/norms/v1
+    description: This API gets published in multiple environments for different stages of development. Note that naming is provisional, please update with final domain and hostname
     variables:
       stage:
         default: .
-        description: a descriptor for the target environment, such as .tst. .acc. and .demo.
+        description: a descriptor for the target environment, such as tst. acc. and demo.
 components:
   schemas:
+    familyList:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          nenFamilyId:
+            $ref: '../CDM/NenIdentifiers.json#/definitions/nenFamilyId'
+          updatedAt:
+            $ref: '../CDM/NenFamily_V0.9.0.json#/properties/updatedAt'
+    familyAdminList:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          nenFamilyId:
+            $ref: '../CDM/NenIdentifiers.json#/definitions/nenFamilyId'
+          nenFamilyAdminId:
+            $ref: '../CDM/NenIdentifiers.json#/definitions/nenFamilyAdminId'
+          updatedAt:
+            $ref: '../CDM/NenFamily_V0.9.0.json#/properties/updatedAt'
     projectList:
       type: array
       items:
@@ -362,6 +729,8 @@ components:
         properties:
           nenFamilyId:
             $ref: '../CDM/NenIdentifiers.json#/definitions/nenFamilyId'
+          nenFamilyAdminId:
+            $ref: '../CDM/NenIdentifiers.json#/definitions/nenFamilyAdminId'
           nenProjectId:
             $ref: '../CDM/NenIdentifiers.json#/definitions/nenProjectId'
           updatedAt:
@@ -374,12 +743,14 @@ components:
         properties:
           nenFamilyId:
             $ref: '../CDM/NenIdentifiers.json#/definitions/nenFamilyId'
+          nenFamilyAdminId:
+            $ref: '../CDM/NenIdentifiers.json#/definitions/nenFamilyAdminId'
           nenProjecId:
             $ref: '../CDM/NenIdentifiers.json#/definitions/nenProjectId'
           nenPublicationId:
             $ref: '../CDM/NenIdentifiers.json#/definitions/nenPublicationId'
           updatedAt:
-            $ref: '../CDM/NenProject_V0.9.0.json#/properties/updatedAt'
+            $ref: '../CDM/NenPublication_V0.9.0.json#/properties/updatedAt'
     releaseItemList:
       type: array
       items:
@@ -388,6 +759,8 @@ components:
         properties:
           nenFamilyId:
             $ref: '../CDM/NenIdentifiers.json#/definitions/nenFamilyId'
+          nenFamilyAdminId:
+            $ref: '../CDM/NenIdentifiers.json#/definitions/nenFamilyAdminId'
           nenProjecId:
             $ref: '../CDM/NenIdentifiers.json#/definitions/nenProjectId'
           nenPublicationId:
@@ -395,7 +768,7 @@ components:
           nenReleaseItemId:
             $ref: '../CDM/NenIdentifiers.json#/definitions/nenContentRefId'
           updatedAt:
-            $ref: '../CDM/NenProject_V0.9.0.json#/properties/updatedAt'
+            $ref: '../CDM/NenReleaseItem_V0.9.0.json#/properties/updatedAt'
   parameters:
     familyFilter:
       name: family
@@ -404,6 +777,13 @@ components:
       required: false
       schema:
         $ref: '../CDM/NenIdentifiers.json#/definitions/nenFamilyId'
+    familyAdminFilter:
+      name: familyAdmin
+      in: query
+      description: filter collection resources for a specific family admin
+      required: false
+      schema:
+        $ref: '../CDM/NenIdentifiers.json#/definitions/nenFamilyAdminId'
     projectFilter:
       name: project
       in: query
@@ -418,7 +798,34 @@ components:
       required: false
       schema:
         $ref: '../CDM/NenIdentifiers.json#/definitions/nenPublicationId'
+  links:
+    families:
+      operationId: getFamilyById
+      parameters:
+        familyId: "$response.body#/nenFamilyId"
+        description: forEach item in the list, getFamilyById
+    familyAdmins:
+      operationId: getFamilyAdminById
+      parameters:
+        familyAdminId: "$response.body#/nenFamilyAdminId"
+        description: forEach item in the list, getFamilyAdminById
+    projects:
+      operationId: getProjectById
+      parameters:
+        projectId: "$response.body#/nenProjectId"
+        description: forEach item in the list, getProjectById
+    publications:
+      operationId: getPublicationById
+      parameters:
+        publicationId: "$response.body#/nenPublicationId"
+        description: forEach item in the list, getPublicationById
+    releaseItems:
+      operationId: getReleaseItemById
+      parameters:
+        contentRefId: "$response.body#/nenContentRefId"
+        description: forEach item in the list, getReleaseItemById
   securitySchemes:
+#   $comment: 'security is yet to be decided. To be updated later.'
     clientCredentials:
       $ref: './NenOasFragments.json#/securitySchemes/clientCredentials'
     bearerAuth:
