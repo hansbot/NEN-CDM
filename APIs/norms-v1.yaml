@@ -22,6 +22,8 @@ tags:
     description: Collection and item resource for Standard Resource Items
   - name: Healthcheck
     description: to verify if the service is up and running healthily
+  - name: Event
+    description: to publish an event to a topic
 paths:
   /health:
     get:
@@ -64,6 +66,90 @@ paths:
 #       $comment: 'security is yet to be decided. To be updated later.'
         - apiKey: []
         - clientCredentials: []
+        - mutualTLS: []
+  /events/{topic}:
+    post:
+      summary: Ontvangst van een CloudEvent via HTTP
+      description: Publiceert een CloudEvent naar het eventing-systeem.
+      operationId: postEvent
+      tags:
+        - Event
+      parameters:
+        - $ref: './NenOasFragments.json#/parameters/correlationId'
+        - name: topic
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: 
+              - family
+              - familyAdmin
+              - project
+              - publication
+              - releaseItem
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+#              $ref: 'https://github.com/cloudevents/spec/blob/main/cloudevents/formats/cloudevents.json'
+              type: object
+              additionalProperties: false
+              properties:
+# to be discussed: most or all of the properties of the CloudEvent can be added on the integration platform. 
+#                specversion:
+#                  description: cloudEvents conform to the spec https://github.com/cloudevents/spec
+#                  type: string
+#                  enum:
+#                    - '1.0.2'
+#                id:
+#                  type: string
+#                  format: uuid
+#                type:
+#                  type: string
+#                source:
+#                  type: string
+#                  format: uri
+#                time:
+#                  type: string
+#                  format: date-time
+#                datacontenttype:
+#                  type: string
+#                  const: application/json
+#                correlationId:
+#                  the corrId is in the request header 
+                refId:
+                  oneOf:
+                    - $ref: '../CDM/NenIdentifiers.json#/definitions/nenFamilyId'
+                    - $ref: '../CDM/NenIdentifiers.json#/definitions/nenFamilyAdminId'
+                    - $ref: '../CDM/NenIdentifiers.json#/definitions/nenProjectId'
+                    - $ref: '../CDM/NenIdentifiers.json#/definitions/nenPublicationId'
+                    - $ref: '../CDM/NenIdentifiers.json#/definitions/releaseItemId'
+              required:
+                - refId
+ #               - specversion
+ #               - id
+ #               - type
+ #               - source
+      responses:
+        '202':
+          $ref: './NenOasFragments.json#/responses/202'
+        '400':
+          $ref: './NenOasFragments.json#/responses/400'
+        '401':
+          $ref: './NenOasFragments.json#/responses/401'
+        '403':
+          $ref: './NenOasFragments.json#/responses/403'
+        '500':
+          $ref: './NenOasFragments.json#/responses/500'
+        '503':
+          $ref: './NenOasFragments.json#/responses/503'
+        '504':
+          $ref: './NenOasFragments.json#/responses/504'
+      security:
+        - apiKey: []
+        - clientCredentials:
+          - event:post
         - mutualTLS: []
   /families:
     get:
@@ -827,7 +913,16 @@ components:
   securitySchemes:
 #   $comment: 'security is yet to be decided. To be updated later.'
     clientCredentials:
-      $ref: './NenOasFragments.json#/securitySchemes/clientCredentials'
+#      $ref: './NenOasFragments.json#/securitySchemes/clientCredentials'
+      description: OAuth client credentials flow
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.nen.nl/authenticate
+          scopes:
+            read: get information
+            monitor: check health
+            event:post: post events to pubsub topics
     bearerAuth:
       $ref: './NenOasFragments.json#/securitySchemes/jwtBearer'
     apiKey:

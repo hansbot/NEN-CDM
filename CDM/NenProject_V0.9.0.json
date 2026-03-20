@@ -3,7 +3,7 @@
   "description": "Schema for NEN Project details.",
   "title": "NenProject Canonical Schema",
   "version": "0.9.0",
-  "$comment": "Last modified on 2026-03-10 by Hans Bot - NEN. Derived from 'NEN Content Publication V0.8.1-bundled.yaml'. Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/135495682/NenProjects",
+  "$comment": "Last modified on 2026-03-19 by Hans Bot - NEN. Derived from 'NEN Content Publication V0.8.1-bundled.yaml'. Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/135495682/NenProjects",
   "type": "object",
   "properties": {
     "nenProjectId": {
@@ -217,17 +217,51 @@
       "$ref": "./NenDefinitions.json#/definitions/updatedAt"
     },
     "references": {
-      "description": "Array of reference objects related to the NEN project. Prefer an array over '&' delimited strings for better structure and validation. Each reference object can contain properties such as 'reference', 'stdNumber', and 'nenCommitteeDisplayName'.",
-      "$comment": "Unsure if the projects are directly related, as in the UML model, or through a common parent familyAdmin - HBo",
+      "description": "pointers to linked entities",
       "type": "object",
       "properties": {
-        "nenProjects": {
+        "nenProjectRelations": {
+          "description": "The UML model specifies the relation",
           "type": "array",
           "items": {
-            "projectId": {
-              "$ref": "./NenIdentifiers.json#/definitions/nenProjectId",
-              "$comment": "can be used as path parameter in link definition in the API"
-            },
+            "projectRelation": {
+              "type": "object",
+              "properties": {
+                "projectId": {
+                  "$ref": "./NenIdentifiers.json#/definitions/nenProjectId",
+                  "$comment": "can be used as path parameter in link definition in the API"
+                },
+                "nenRelationType": {
+                  "type": "string",
+                  "enum": [
+                    "adopts",
+                    "adoptedBy",
+                    "amends",
+                    "amendedBy",
+                    "corrects",
+                    "correctedBy",
+                    "replaces",
+                    "replacedBy",
+                    "replacesPartially",
+                    "replacedPartiallyBy",
+                    "translates",
+                    "translatedBy",
+                    "nationalExtensionWith",
+                    "extendedByNational",
+                    "certificationSchemaWith",
+                    "hasCertificationSchema",
+                    "consolidates",
+                    "consolidatedBy",
+                    "redlines",
+                    "redlinedBy",
+                    "comments",
+                    "commentedBy",
+                    "extends",
+                    "extendedBy"
+                  ]
+                }
+              }
+          },
           "minItems": 1,
           "maxItem": 12,
           "uniqueItems": true,
@@ -239,7 +273,10 @@
           "$ref": "./NenIdentifiers.json#/definitions/nenFamilyAdminId"
         }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "required": [
+        "nenFamilyAdmin"
+      ]
     }
   },
   "required": [
@@ -248,6 +285,6 @@
     "references",
     "stageCode",
     "updatedAt"
-   ],
+  ],
   "additionalProperties": false
 }

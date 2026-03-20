@@ -3,7 +3,7 @@
   "description": "Schema for NEN Family details",
   "title": "NenFamily Canonical Schema",
   "version": "0.9.0",
-  "$comment": "Last modified on 2026-03-18 by Hans Bot - NEN.",
+  "$comment": "Last modified on 2026-03-19 by Hans Bot - NEN.",
   "type": "object",
   "properties": {
     "nenFamilyId": {
@@ -12,7 +12,7 @@
     "nenFamilyURN": {
         "$ref": "./NenDefinitions.json#/definitions/nenFamilyURN"
     },
-    "nenFamily": {
+    "nenFamilyName": {
         "type": "string",
         "description": "Number owner concatenated with standard number",
         "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/138903736/nenFamily",
@@ -48,14 +48,6 @@
         "maxItems": 5,
         "uniqueItems": true
     },
-    "nenStandardType": {
-        "$ref": "./NenDefinitions.json#/definitions/publicationTypes"
-    },
-    "nenOrder": {
-        "description": "In cases where the the automated ordering of Poolparty does not suffice the order can be forced manually",
-        "$comment": "missing details. Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/138346543/nenOrder",
-        "type": "null"
-    },
     "nenFamilyNumbers": {
         "type": "array",
         "description": "only for fit gap NEN Connect! Will not be populated after NEN Connect is phased out",
@@ -67,47 +59,89 @@
         "maxItems": 50,
         "uniqueItems": false
     },
-    "nenIcsCodes": {
+    "nenFamilyTopic": {
+        "description": "NenFamilyTopic will collect all the more topical metadata such as the ICS code and titles.",
+        "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/147652849/nenFamilyTopic",
         "type": "object",
         "properties": {
-            "code": {
+            "nenFullTitle": {
+                "description": "",
+                "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/143753258/nenFullTitle",
                 "type": "string",
-                "description": "This field contains the ICS code that classifies a Standard",
-                "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/311197779/nenIcsCode",
-                "examples": ["85.040"],
-                "pattern": "^[0-9.]+$"
+                "examples": []
             },
-            "details": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "properties": {
-                        "language": {
-                            "$ref": "./NenDefinitions.json#/definitions/isoLanguageCode-1"
-                        },
-                        "localTitle": {
-                            "description": "The main title of the code.",
-                            "$comment": "Internal references: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/141754726/nenIcsCodeTitleNl; https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/141656351/nenIcsCodeTitleEn",
-                            "type": "string",
-                            "minLength": 1,
-                            "maxLength": 256,
-                            "examples": [
-                                "Papierpulp", "Pulps"
-                            ]
-                        },
-                        "localScopeReference": {
-
-                        },
-                        "localScopeDescription": {
-
-                        },
-                        "localScope": {
-
-                        }
+            "nenPartTitle": {
+                "description": "If applicable, preferably in both EN and NL, even if the standard will not (yet) be translated",
+                "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/138444816/nenPartTitle",
+                "type": "string",
+                "examples": []
+            },
+            "nenOrder": {
+                "description": "In cases where the the automated ordering of Poolparty does not suffice the order can be forced manually",
+                "$comment": "missing details. Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/138346543/nenOrder",
+                "type": "null"
+            },
+            "nenStandardType": {
+                "$ref": "./NenDefinitions.json#/definitions/publicationTypes",
+                "type": "string",
+                "enum": [
+                    "Guide",
+                    "HD",
+                    "HKZ",
+                    "N",
+                    "NTA",
+                    "NVN",
+                    "NPR",
+                    "PGS",
+                    "TR",
+                    "TS"
+                ]
+            },
+            "nenIcsCodes": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "description": "This field contains the ICS code that classifies a Standard",
+                        "$comment": "Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/311197779/nenIcsCode",
+                        "examples": ["85.040"],
+                        "pattern": "^[0-9.]+$"
                     },
-                    "required": ["language"]
+                    "details": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "language": {
+                                    "$ref": "./NenDefinitions.json#/definitions/isoLanguageCode-1"
+                                },
+                                "localTitle": {
+                                    "description": "The main title of the code.",
+                                    "$comment": "Internal references: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/141754726/nenIcsCodeTitleNl; https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/141656351/nenIcsCodeTitleEn",
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 256,
+                                    "examples": [
+                                        "Papierpulp", "Pulps"
+                                    ]
+                                },
+                                "localScopeReference": {
+
+                                },
+                                "localScopeDescription": {
+
+                                },
+                                "localScope": {
+
+                                }
+                            },
+                            "required": ["language"]
+                        },
+                        "uniqueItems": true
+                    }
                 },
-                "uniqueItems": true
+                "additionalProperties": false,
+                "required": []
             }
         }
     },
@@ -135,7 +169,11 @@
             "maxItems": 24
         }
     }
- },
-  "required": ["nenFamilyId", "updatedAt"],
+  },
+  "required": [
+    "nenFamilyId", 
+    "updatedAt",
+    "references"
+    ],
   "additionalProperties": false
 }

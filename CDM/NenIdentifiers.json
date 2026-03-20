@@ -10,7 +10,7 @@
       "description": "Unique identifier for the committee member, consisting of numeric characters.",
       "type": "integer",
       "examples": [
-        "748219, 23984"
+        748219, 23984
       ]
     },
     "clientId": {

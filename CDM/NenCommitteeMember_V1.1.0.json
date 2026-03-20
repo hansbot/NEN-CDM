@@ -7,7 +7,7 @@
   "type": "object",
   "properties": {
     "memberId": {
-      "$comment": "in SAP: contactpersoonID",
+      "$comment": "in SAP: either 'contactpersoonID', or 'Werknemers-ID' (not necessarily unique)",
       "$ref": "./NenIdentifiers.json#/definitions/memberId"
     },
     "member": {
@@ -20,13 +20,12 @@
       "maxLength": 16,
       "default": "Member",
       "examples": [
-        "Chair", "Secretary", "Member", "Observer"
+        "Chair", "Secretary", "Member", "Observer", "Funder"
       ]
     },
-    "consent": {
+    "nenMember": {
       "type": "boolean",
-      "description": "Indicates whether the member may be contacted",
-      "$comment": "in SAP: 'contactbevoegdheid'"
+      "description": "Indicates whether the member is a NEN employee (and consequently, that memberId equals the 'Werknemers-ID'"
     },
     "references": {
       "clientId": {

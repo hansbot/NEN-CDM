@@ -3,7 +3,7 @@
   "description": "Schema for NEN FamilyAdmin details",
   "title": "NenFamilyAdmin Canonical Schema",
   "version": "0.9.0",
-  "$comment": "Last modified on 2026-03-18 by Hans Bot - NEN.",
+  "$comment": "Last modified on 2026-03-19 by Hans Bot - NEN.",
   "type": "object",
   "properties": {
     "nenFamilyAdminId": {
@@ -42,6 +42,7 @@
         "$ref": "./NenDefinitions.json#/definitions/updatedAt"
     },
     "references": {
+        "description": "pointers to linked entities",
         "type": "object",
         "properties": {
             "projects": {
@@ -59,9 +60,16 @@
                 "ref": "./NenIdentifiers.json#/definitions/nenFamilyId"
             }                     
         },
-        "additionalProperties": false 
+        "additionalProperties": false,
+        "required": [
+            "family"
+        ]
     }
   },
   "additionalProperties": false, 
-  "required": ["familyAdminId", "updatedAt"]
+  "required": [
+    "familyAdminId", 
+    "updatedAt",
+    "references"
+    ]
 }

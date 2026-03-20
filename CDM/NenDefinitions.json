@@ -3,7 +3,7 @@
   "description": "Shared references for NEN schemas. These definitions are not versioned, and can only be updated with non-breaking changes (i.e. additions)",
   "title": "NenDefinitions",
   "version": "0.9.0",
-  "$comment": "Last modified on 2026-03-10 by Hans Bot - NEN. Reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/268009511/Value+lists",
+  "$comment": "Last modified on 2026-03-19 by Hans Bot - NEN. Reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/268009511/Value+lists",
   "type": "object",
   "definitions": {
     "emailAddress": {
@@ -483,6 +483,7 @@
       "minLength": 2,
       "maxLength": 64,
       "description": "Organisation involved in the creation of the standard text.",
+      "pattern": "^[A-Z/ ]+$",
       "examples": [
         "NEN", "ISO", "IEC", "CEN", "CENELEC", "API", "ASME", "ASTM", "BSI", "DIN", "IEEE", "UL", "ETSI"
       ]
@@ -498,7 +499,7 @@
       "pattern": "^+?[0-9 -()]{10,20}$" 
     },
     "updatedAt": {
-      "description": "Timestamp for most recent update of the resource. Cannot be a date in the future.",
+      "description": "Timestamp for most recent update of the resource. Cannot be a date in the future. Typically required to query collection resources for recently changed entities",
       "$comment": "adapted from 'cen-publications.yaml'  'lastChangeTimestamp'.",
       "expressions": {
         "notFutureDate": {

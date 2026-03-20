@@ -8,7 +8,7 @@
   "version": "1.1.0",
   "properties": {
     "nenCommitteeId": {
-        "$ref": "./NenIdentifiers.json#/definitions#/nenCommitteeId"
+        "$ref": "./NenIdentifiers.json#/definitions/nenCommitteeId"
     },
     "committeeName": {
         "type": "array",
@@ -23,6 +23,7 @@
                     },
                     "localName": {
                         "type": "string",
+                        "maxLength": 256,
                         "examples": [
                             "Sterk Betonconstructies",
                             "Strong Concrete Structures"
@@ -39,20 +40,7 @@
         "type": "string",
         "examples": ["NEN", "ISO", "CEN", "CENELEC", "IEC"],
         "description": "Organization that governs the committee",
-        "$comment": "Is this the same as the 'SDO' as defined in the nenDefinitions?"
-    },
-    "umbrellaStructure": {
-        "type": "string",
-        "description": "possibly the committee in HAPI parlance",
-        "examples": []
-    },
-    "mainStructure": {
-        "type": "string",
-        "description": "possibly the subcommittee in HAPI parlance"
-    },
-    "subStructure": {
-        "type": "string",
-        "description": "possibly the working group in HAPI parlance"
+        "$comment": "Is this the same as the 'SDO' as defined in the nenDefinitions? -> JA"
     },
     "externalCommittee": {
         "type": "boolean",
@@ -60,7 +48,8 @@
         "$comment": "consider renaming into a more positive 'NenCommittee'"
     },
     "costCenter": {
-        "type": "string",
+        "type": "integer",
+        "examples": [103103, 12093115],
         "comment": "is this relevant outside the business administration domain? If so, we need to define the format and semantics of this property."
     },
     "costCenterDescription": {
@@ -69,22 +58,26 @@
     },
     "committeeType": {
         "type": "string",
-        "description": "possibly hapi:field, with the enumerated values TECHNICAL, POLICY, GOVERNANCE, EXTERNAL, NONTECHNICAL."
+        "description": "in SAP projecttype",
+        "examples": ["normcommissie"]
     },
     "instituteType": {
         "type": "string",
-        "description": "possibly hapi:technicalSector, expressing expresses the business area the committee is active in"
+        "$comment": "in SAP: soort instituut",
+        "examples": ["NEN"]
     },
     "active": {
-        "type": "boolean",
+        "type": "string",
         "description": "Please note that the indication 'active' is not always consistent with the terminatedAt value",
-        "$comment": "possibly replace with a richer status attribute [inactive, active, terminated] or similar"
+        "enum":[
+            "zie foto"
+        ]
     },
     "createdAt": {
         "description": "The date and time when the committee was created. Date must be in the past",
         "$ref": "./NenDefinitions.json#/definitions/isoDateTimeExt"
     },
-    "terminatedAt": {
+    "endedAt": {
         "description": "The date and time when the committee was decommissioned.",
         "$ref": "./NenDefinitions.json#/definitions/isoDateTimeExt"
     },
@@ -106,17 +99,11 @@
             }
         }
     },
-    "liveLink": {
-        "type": "boolean",
-        "$comment": "no clue"
-    },
-    "contextValue": {
-        "type": "string"
-    },
     "references": {
         "committeeMembers": {
             "description": "List of committee member ids. To be used as path parameter in an API link",
             "type": "array",
+            "uniqueItems": false,
             "items": {
                 "$ref": "./NenIdentifiers.json#/nenCommitteeMemberId"
             }

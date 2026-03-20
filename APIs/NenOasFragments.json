@@ -267,18 +267,16 @@
     "clientCredentials": {
         "description": "OAuth client credentials flow",
         "type": "oauth2",
-        "in": "header",
-        "name": "Authorization",
-        "scheme": "http",
         "flows": {
             "clientCredentials" : {
-                "tokenUrl": "https://api.nen.nl/authenticate"
+              "$comment": "url to be validated",
+              "tokenUrl": "https://api.nen.nl/authenticate",
+              "scopes": {
+                  "read": "get information",
+                  "monitor": "check health",
+                  "event:post": "post events to pubsub topics"
+              }
             }
-        },
-        "scopes": {
-            "read": "Read access to norms info",
-            "monitor": "Read access to health endpoint",
-            "postEvents": "Write access to events channels"
         }
     },
     "mutualTLS": {
@@ -287,8 +285,7 @@
     },
     "OIDC": {
         "description": "Access token issued using OpenID Connect Authentication flow",
-        "type": "openIdConnect",
-        "name": ""
+        "type": "openIdConnect"
     },
     "oauth2": {
       "type": "oauth2",
@@ -298,9 +295,9 @@
           "tokenUrl": "https://auth.example.com/token",
           "refreshUrl": "https://auth.example.com/token",
           "scopes": {
-            "read:resources": "Read access to resources",
-            "write:resources": "Write access to resources",
-            "admin": "Full admin access" 
+            "read": "Read access to norms info",
+            "monitor": "Read access to health endpoint",
+            "postEvents": "Write access to events channels"
           }
         } 
       }
