@@ -105,7 +105,7 @@
             "type": "array",
             "uniqueItems": false,
             "items": {
-                "$ref": "./NenIdentifiers.json#/nenCommitteeMemberId"
+                "$ref": "./NenIdentifiers.json#/definitions/memberId"
             }
         }
     }

@@ -3,7 +3,7 @@
   "description": "Schema for NEN Family details",
   "title": "NenFamily Canonical Schema",
   "version": "0.9.0",
-  "$comment": "Last modified on 2026-03-19 by Hans Bot - NEN.",
+  "$comment": "Last modified on 2026-03-24 by Hans Bot - NEN. Added recursion to the family entity as indicated by Petra",
   "type": "object",
   "properties": {
     "nenFamilyId": {
@@ -167,7 +167,15 @@
             },
             "minItems": 0,
             "maxItems": 24
-        }
+        },
+        "nenFamilies": {
+            "type": "array",
+            "items": {
+                "$ref": "./NenIdentifiers.json#/definitions/nenFamilyId"
+            },
+            "minItems": 0,
+            "maxItems": 24
+        }   
     }
   },
   "required": [

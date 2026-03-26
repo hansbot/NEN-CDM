@@ -27,6 +27,10 @@
       "type": "boolean",
       "description": "Indicates whether the member is a NEN employee (and consequently, that memberId equals the 'Werknemers-ID'"
     },
+    "updatedAt": {
+        "description": "The date and time when the member was last updated.",
+        "$ref": "./NenDefinitions.json#/definitions/isoDateTimeExt"
+    },
     "references": {
       "clientId": {
         "$ref": "./NenIdentifiers.json#/definitions/clientId"

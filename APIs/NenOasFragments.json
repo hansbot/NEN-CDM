@@ -264,6 +264,10 @@
         "in": "header",
         "name": "X-API-Key"
     },
+    "mutualTLS": {
+        "description": "Mutual authentication during setup of TLS connection, typically used between servers",
+        "type": "mutualTLS"
+    },
     "clientCredentials": {
         "description": "OAuth client credentials flow",
         "type": "oauth2",
@@ -271,17 +275,19 @@
             "clientCredentials" : {
               "$comment": "url to be validated",
               "tokenUrl": "https://api.nen.nl/authenticate",
-              "scopes": {
-                  "read": "get information",
-                  "monitor": "check health",
+              "scopes": [
+                {
+                  "read": "get information"
+                },
+                {
+                  "monitor": "check health"
+                },
+                {
                   "event:post": "post events to pubsub topics"
-              }
+                } 
+              ]
             }
         }
-    },
-    "mutualTLS": {
-        "description": "Mutual authentication during setup of TLS connection, typically used between servers",
-        "type": "mutualTLS"
     },
     "OIDC": {
         "description": "Access token issued using OpenID Connect Authentication flow",

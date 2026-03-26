@@ -24,6 +24,44 @@ tags:
     description: to verify if the service is up and running healthily
   - name: Event
     description: to publish an event to a topic
+# Define the anchors once (before referencing them)
+x-default-responses:
+  getItem: &standardGetWithEtagResponses
+    '304':
+      $ref: './NenOasFragments.json#/responses/304'
+    '400':
+      $ref: './NenOasFragments.json#/responses/400'
+    '401':
+      $ref: './NenOasFragments.json#/responses/401'
+    '403':
+      $ref: './NenOasFragments.json#/responses/403'
+    '404':
+      $ref: './NenOasFragments.json#/responses/404'
+    '408':
+      $ref: './NenOasFragments.json#/responses/408'
+    '500':
+      $ref: './NenOasFragments.json#/responses/500'
+    '503':
+      $ref: './NenOasFragments.json#/responses/503'
+    '504':
+      $ref: './NenOasFragments.json#/responses/504'
+  getCollection: &standardGetResponses
+    '400':
+      $ref: './NenOasFragments.json#/responses/400'
+    '401':
+      $ref: './NenOasFragments.json#/responses/401'
+    '403':
+      $ref: './NenOasFragments.json#/responses/403'
+    '408':
+      $ref: './NenOasFragments.json#/responses/408'
+    '429':
+      $ref: './NenOasFragments.json#/responses/429'
+    '500':
+      $ref: './NenOasFragments.json#/responses/500'
+    '503':
+      $ref: './NenOasFragments.json#/responses/503'
+    '504':
+      $ref: './NenOasFragments.json#/responses/504'
 paths:
   /health:
     get:
@@ -46,22 +84,7 @@ paths:
             application/json:
               schema:
                 $ref: './NenOasFragments.json#/schemas/healthStatus'
-        '400':
-          $ref: './NenOasFragments.json#/responses/400'
-        '401':
-          $ref: './NenOasFragments.json#/responses/401'
-        '403':
-          $ref: './NenOasFragments.json#/responses/403'
-        '408':
-          $ref: './NenOasFragments.json#/responses/408'
-        '429':
-          $ref: './NenOasFragments.json#/responses/429'
-        '500':
-          $ref: './NenOasFragments.json#/responses/500'
-        '503':
-          $ref: './NenOasFragments.json#/responses/503'
-        '504':
-          $ref: './NenOasFragments.json#/responses/504'
+        <<: *standardGetResponses
       security:
 #       $comment: 'security is yet to be decided. To be updated later.'
         - apiKey: []
@@ -92,32 +115,10 @@ paths:
         content:
           application/json:
             schema:
-#              $ref: 'https://github.com/cloudevents/spec/blob/main/cloudevents/formats/cloudevents.json'
+              description: the integration platform will publish an event conform 'https://github.com/cloudevents/spec/blob/main/cloudevents/formats/cloudevents.json' to the specified topic
               type: object
               additionalProperties: false
               properties:
-# to be discussed: most or all of the properties of the CloudEvent can be added on the integration platform. 
-#                specversion:
-#                  description: cloudEvents conform to the spec https://github.com/cloudevents/spec
-#                  type: string
-#                  enum:
-#                    - '1.0.2'
-#                id:
-#                  type: string
-#                  format: uuid
-#                type:
-#                  type: string
-#                source:
-#                  type: string
-#                  format: uri
-#                time:
-#                  type: string
-#                  format: date-time
-#                datacontenttype:
-#                  type: string
-#                  const: application/json
-#                correlationId:
-#                  the corrId is in the request header 
                 refId:
                   oneOf:
                     - $ref: '../CDM/NenIdentifiers.json#/definitions/nenFamilyId'
@@ -127,10 +128,6 @@ paths:
                     - $ref: '../CDM/NenIdentifiers.json#/definitions/releaseItemId'
               required:
                 - refId
- #               - specversion
- #               - id
- #               - type
- #               - source
       responses:
         '202':
           $ref: './NenOasFragments.json#/responses/202'
@@ -149,7 +146,7 @@ paths:
       security:
         - apiKey: []
         - clientCredentials:
-          - event:post
+          - 'event:post'
         - mutualTLS: []
   /families:
     get:
@@ -189,22 +186,7 @@ paths:
               $ref: './NenOasFragments.json#/headers/correlationId'
             X-Next:
               $ref: './NenOasFragments.json#/headers/next'
-        '400':
-          $ref: './NenOasFragments.json#/responses/400'
-        '401':
-          $ref: './NenOasFragments.json#/responses/401'
-        '403':
-          $ref: './NenOasFragments.json#/responses/403'
-        '408':
-          $ref: './NenOasFragments.json#/responses/408'
-        '429':
-          $ref: './NenOasFragments.json#/responses/429'
-        '500':
-          $ref: './NenOasFragments.json#/responses/500'
-        '503':
-          $ref: './NenOasFragments.json#/responses/503'
-        '504':
-          $ref: './NenOasFragments.json#/responses/504'
+        <<: *standardGetResponses
       servers:
         - url: https://example.com/poolparty/familyAPI
           description: provisional specification for the endpoint in the source system. Please update with final values
@@ -219,7 +201,7 @@ paths:
       operationId: getFamilyById
       tags:
         - Family
-      summary: Retrieve family tree by Id
+      summary: Retrieve family by Id
       parameters:
         - name: familyId
           in: path
@@ -241,19 +223,16 @@ paths:
               operationId: getFamilyAdminById
               parameters:
                 familyAdminId: "$response.body#/references/nenFamilyAdmins/nenFamilyAdminId"
+            getFamily:
+              operationId: getFamilyById
+              parameters:
+                familyAdminId: "$response.body#/references/nenFamilies/nenFamilyId"
           headers:
             X-Correlation-Id:
               $ref: './NenOasFragments.json#/headers/correlationId'
             ETag:
               $ref: './NenOasFragments.json#/headers/eTag'
-        '304':
-          $ref: './NenOasFragments.json#/responses/304'
-        '500':
-          $ref: './NenOasFragments.json#/responses/500'
-        '503':
-          $ref: './NenOasFragments.json#/responses/503'
-        '504':
-          $ref: './NenOasFragments.json#/responses/504'
+        <<: *standardGetWithEtagResponses
       servers:
         - url: https://example.com/poolparty/familyAPI
           description: provisional specification for the endpoint in the source system. Please update with final values
@@ -305,22 +284,7 @@ paths:
               $ref: './NenOasFragments.json#/headers/correlationId'
             X-Next:
               $ref: './NenOasFragments.json#/headers/next'
-        '400':
-          $ref: './NenOasFragments.json#/responses/400'
-        '401':
-          $ref: './NenOasFragments.json#/responses/401'
-        '403':
-          $ref: './NenOasFragments.json#/responses/403'
-        '408':
-          $ref: './NenOasFragments.json#/responses/408'
-        '429':
-          $ref: './NenOasFragments.json#/responses/429'
-        '500':
-          $ref: './NenOasFragments.json#/responses/500'
-        '503':
-          $ref: './NenOasFragments.json#/responses/503'
-        '504':
-          $ref: './NenOasFragments.json#/responses/504'
+        <<: *standardGetResponses
       servers:
         - url: https://example.com/poolparty/familyAdminAPI
           description: provisional specification for the endpoint in the source system. Please update with final values
@@ -370,14 +334,7 @@ paths:
               $ref: './NenOasFragments.json#/headers/correlationId'
             ETag:
               $ref: './NenOasFragments.json#/headers/eTag'
-        '304':
-          $ref: './NenOasFragments.json#/responses/304'
-        '500':
-          $ref: './NenOasFragments.json#/responses/500'
-        '503':
-          $ref: './NenOasFragments.json#/responses/503'
-        '504':
-          $ref: './NenOasFragments.json#/responses/504'
+        <<: *standardGetWithEtagResponses
       servers:
         - url: https://example.com/poolparty/familyAdminAPI
           description: provisional specification for the endpoint in the source system. Please update with final values
@@ -434,22 +391,7 @@ paths:
               $ref: './NenOasFragments.json#/headers/correlationId'
             X-Next:
               $ref: './NenOasFragments.json#/headers/next'
-        '400':
-          $ref: './NenOasFragments.json#/responses/400'
-        '401':
-          $ref: './NenOasFragments.json#/responses/401'
-        '403':
-          $ref: './NenOasFragments.json#/responses/403'
-        '408':
-          $ref: './NenOasFragments.json#/responses/408'
-        '429':
-          $ref: './NenOasFragments.json#/responses/429'
-        '500':
-          $ref: './NenOasFragments.json#/responses/500'
-        '503':
-          $ref: './NenOasFragments.json#/responses/503'
-        '504':
-          $ref: './NenOasFragments.json#/responses/504'
+        <<: *standardGetResponses
       servers:
         - url: https://example.com/sitefusion/projectAPI
           description: provisional specification for the endpoint in the source system. Please update with final values
@@ -499,14 +441,7 @@ paths:
               $ref: './NenOasFragments.json#/headers/correlationId'
             ETag:
               $ref: './NenOasFragments.json#/headers/eTag'
-        '304':
-          $ref: './NenOasFragments.json#/responses/304'
-        '500':
-          $ref: './NenOasFragments.json#/responses/500'
-        '503':
-          $ref: './NenOasFragments.json#/responses/503'
-        '504':
-          $ref: './NenOasFragments.json#/responses/504'
+        <<: *standardGetWithEtagResponses
       servers:
         - url: https://example.com/sitefusion/projectAPI
           description: provisional specification for the endpoint in the source system. Please update with final values
@@ -568,22 +503,7 @@ paths:
               $ref: './NenOasFragments.json#/headers/correlationId'
             X-Next:
               $ref: './NenOasFragments.json#/headers/next'
-        '400':
-          $ref: './NenOasFragments.json#/responses/400'
-        '401':
-          $ref: './NenOasFragments.json#/responses/401'
-        '403':
-          $ref: './NenOasFragments.json#/responses/403'
-        '408':
-          $ref: './NenOasFragments.json#/responses/408'
-        '429':
-          $ref: './NenOasFragments.json#/responses/429'
-        '500':
-          $ref: './NenOasFragments.json#/responses/500'
-        '503':
-          $ref: './NenOasFragments.json#/responses/503'
-        '504':
-          $ref: './NenOasFragments.json#/responses/504'
+        <<: *standardGetResponses
       servers:
         - url: https://example.com/sitefusion/publicationAPI
           description: provisional specification for the endpoint in the source system. Please update with final values
@@ -629,14 +549,7 @@ paths:
               $ref: './NenOasFragments.json#/headers/correlationId'
             ETag:
               $ref: './NenOasFragments.json#/headers/eTag'
-        '304':
-          $ref: './NenOasFragments.json#/responses/304'
-        '500':
-          $ref: './NenOasFragments.json#/responses/500'
-        '503':
-          $ref: './NenOasFragments.json#/responses/503'
-        '504':
-          $ref: './NenOasFragments.json#/responses/504'
+        <<: *standardGetWithEtagResponses
       servers:
         - url: https://example.com/sitefusion/publicationAPI
           description: provisional specification for the endpoint in the source system. Please update with final values
@@ -703,22 +616,7 @@ paths:
               $ref: './NenOasFragments.json#/headers/correlationId'
             X-Next:
               $ref: './NenOasFragments.json#/headers/next'
-        '400':
-          $ref: './NenOasFragments.json#/responses/400'
-        '401':
-          $ref: './NenOasFragments.json#/responses/401'
-        '403':
-          $ref: './NenOasFragments.json#/responses/403'
-        '408':
-          $ref: './NenOasFragments.json#/responses/408'
-        '429':
-          $ref: './NenOasFragments.json#/responses/429'
-        '500':
-          $ref: './NenOasFragments.json#/responses/500'
-        '503':
-          $ref: './NenOasFragments.json#/responses/503'
-        '504':
-          $ref: './NenOasFragments.json#/responses/504'
+        <<: *standardGetResponses
       servers:
         - url: https://example.com/sitefusion/releaseItemAPI
           description: provisional specification for the endpoint in the source system. Please update with final values
@@ -760,19 +658,12 @@ paths:
               $ref: './NenOasFragments.json#/headers/correlationId'
             ETag:
               $ref: './NenOasFragments.json#/headers/eTag'
-        '304':
-          $ref: './NenOasFragments.json#/responses/304'
-        '500':
-          $ref: './NenOasFragments.json#/responses/500'
-        '503':
-          $ref: './NenOasFragments.json#/responses/503'
-        '504':
-          $ref: './NenOasFragments.json#/responses/504'
+        <<: *standardGetWithEtagResponses
       servers:
         - url: https://example.com/sitefusion/releaseItemAPI
           description: provisional specification for the endpoint in the source system. Please update with final values
       security:
-#       $comment: 'security is yet to be decided. To be updated later.'
+#       $comment: 'security is yet to be decided. Tony strongly preferes OAuth:CC. To be updated later.'
         - apiKey: []
         - clientCredentials: []
         - mutualTLS: []
@@ -913,16 +804,7 @@ components:
   securitySchemes:
 #   $comment: 'security is yet to be decided. To be updated later.'
     clientCredentials:
-#      $ref: './NenOasFragments.json#/securitySchemes/clientCredentials'
-      description: OAuth client credentials flow
-      type: oauth2
-      flows:
-        clientCredentials:
-          tokenUrl: https://api.nen.nl/authenticate
-          scopes:
-            read: get information
-            monitor: check health
-            event:post: post events to pubsub topics
+      $ref: './NenOasFragments.json#/securitySchemes/clientCredentials'
     bearerAuth:
       $ref: './NenOasFragments.json#/securitySchemes/jwtBearer'
     apiKey:

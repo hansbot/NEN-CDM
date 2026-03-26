@@ -1,0 +1,82 @@
+openapi: 3.1.0
+info:
+  title: Reusable path definitions.
+  version: 0.1.0
+  description: |
+    Attempt to create a yaml file for reusable path definitions. So far, this failed the validation in Spectral.
+  contact:
+    name: NEN Servicedesk IT
+    email: ServicedeskITRegie@nen.nl
+    url: 'https://www.nen.nl/contact-nl'
+tags:
+  - name: Healthcheck
+    description: to verify if the service is up and running healthily
+paths:
+  /health:
+    get:
+      description: |
+        Check the status of the service. Returns UP or DOWN with the time of the check.
+        $comment: to be discussed what health is being checked; the gateway health, or of all the services 'behind' the gateway
+      tags:
+        - Healthcheck
+      summary: Healthstatus service
+      operationId: getHealthStatus
+      parameters:
+        - $ref: './NenOasFragments.json#/parameters/correlationId'
+      responses:
+        '200':
+          description: Service status received
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/headers/correlationId'
+          content:
+            application/json:
+              schema:
+                $ref: './NenOasFragments.json#/schemas/healthStatus'
+        '400':
+          $ref: './NenOasFragments.json#/responses/400'
+        '401':
+          $ref: './NenOasFragments.json#/responses/401'
+        '403':
+          $ref: './NenOasFragments.json#/responses/403'
+        '408':
+          $ref: './NenOasFragments.json#/responses/408'
+        '429':
+          $ref: './NenOasFragments.json#/responses/429'
+        '500':
+          $ref: './NenOasFragments.json#/responses/500'
+        '503':
+          $ref: './NenOasFragments.json#/responses/503'
+        '504':
+          $ref: './NenOasFragments.json#/responses/504'
+      security:
+        - clientCredentials:
+          - monitor
+  /users:
+    get:
+      description: example from perplexity – reference not allowed in Spectral
+      operationId: getUser
+      tags: 
+        - Healthcheck
+      summary: List users
+      responses:
+        '200':
+          description: OK
+servers:
+  - url: https://api.{stage}nen.nl/apis/norms/v1
+    description: This API gets published in multiple environments for different stages of development. Note that naming is provisional, please update with final domain and hostname
+    variables:
+      stage:
+        default: .
+        description: a descriptor for the target environment, such as tst. acc. and demo.
+components:
+  securitySchemes:
+#   $comment: 'security is yet to be decided. To be updated later.'
+    clientCredentials:
+      $ref: './NenOasFragments.json#/securitySchemes/clientCredentials'
+    bearerAuth:
+      $ref: './NenOasFragments.json#/securitySchemes/jwtBearer'
+    apiKey:
+      $ref: './NenOasFragments.json#/securitySchemes/apiKey'
+    mutualTLS:
+      $ref: './NenOasFragments.json#/securitySchemes/mutualTLS'
