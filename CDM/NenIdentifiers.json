@@ -6,18 +6,18 @@
   "$comment": "Last modified on 2026-03-06 by Hans Bot - NEN.",
   "type": "object",
   "definitions": {
+    "clientId": {
+      "description": "Unique identifier for NEN-customers",
+      "$comment": "In SAP registered as 'klant-id'",
+      "type": "integer",
+      "examples": [2451, 433, 15399]
+    },
     "memberId": {
       "description": "Unique identifier for the committee member, consisting of numeric characters.",
       "type": "integer",
       "examples": [
         748219, 23984
       ]
-    },
-    "clientId": {
-      "description": "Unique identifier for NEN-customers",
-      "$comment": "In SAP registered as 'klant-id'",
-      "type": "integer",
-      "examples": [2451, 433, 15399]
     },
     "nenCommitteeId": {
       "type": "integer",
@@ -49,6 +49,7 @@
     },
     "nenFamilyNumber": {
       "type": "object",
+      "$comment": "Property types deliberately left empty to trigger further discussion",
         "properties": {
             "main": {
 

@@ -1,7 +1,6 @@
 openapi: 3.1.0
 info:
   title: NEN Business Administrion API
-  version: 0.1.0
   description: |
     API to interact with the ERP capability in the Business Administration Domain
     Audience: clients continually updating a shadow library of standards content.
@@ -9,15 +8,18 @@ info:
     name: NEN Servicedesk IT
     email: ServicedeskITRegie@nen.nl
     url: 'https://www.nen.nl/contact-nl'
+  version: 1.1.1
 tags:
-  - name: Healthcheck
-    description: to verify if the service is up and running healthily
-  - name: Event
-    description: to publish updates on the state of a resource
-  - name: Committee
-    description: Committee resource
-  - name: Member
-    description: Member resource
+- name: Healthcheck
+  description: to verify if the service is up and running healthily
+- name: Event
+  description: to publish updates on the state of a resource
+- name: Subscription
+  description: to manage subscriptions for event topics
+- name: Committee
+  description: Committee resource
+- name: Member
+  description: Member resource
 # Define the anchors once (before referencing them)
 x-default-responses:
   getItem: &standardGetWithEtagResponses
@@ -46,6 +48,8 @@ x-default-responses:
       $ref: './NenOasFragments.json#/responses/401'
     '403':
       $ref: './NenOasFragments.json#/responses/403'
+    '404':
+      $ref: './NenOasFragments.json#/responses/404'
     '408':
       $ref: './NenOasFragments.json#/responses/408'
     '429':
@@ -59,16 +63,16 @@ x-default-responses:
 paths:
   /health:
     get:
-#      $ref: './getHealth.yaml'
+#      $ref: './getHealth.yaml#'
       description: |
         Check the status of the service. Returns UP or DOWN with the time of the check.
         $comment: to be discussed what health is being checked; the gateway health, or of all the services 'behind' the gateway
       tags:
-        - Healthcheck
+      - Healthcheck
       summary: Healthstatus service
       operationId: getHealthStatus
       parameters:
-        - $ref: './NenOasFragments.json#/parameters/correlationId'
+      - $ref: './NenOasFragments.json#/parameters/correlationId'
       responses:
         '200':
           description: Service status received
@@ -81,43 +85,34 @@ paths:
                 $ref: './NenOasFragments.json#/schemas/healthStatus'
         <<: *standardGetResponses
       security:
-#       $comment: 'security is yet to be decided. Preference for CC. To be updated later.'
-        - apiKey: []
-        - clientCredentials: []
-        - mutualTLS: []
+      - clientCredentials:
+        - monitor
   /events/{topic}:
     post:
-      summary: Ontvangst van een CloudEvent via HTTP
+      summary: restful endpoint for publishing a CloudEvent via HTTP
       # Note: for future use only. Current SAP does not publish events. Consumers are polling for updates instead.
-      description: Publiceert een CloudEvent naar het eventing-systeem.
+      description: Publishes a CloudEvent to the broker channel.
       operationId: postEvent
       tags:
-        - Event
+      - Event
       parameters:
-        - $ref: './NenOasFragments.json#/parameters/correlationId'
-        - name: topic
-          in: path
-          required: true
-          schema:
-            type: string
-            enum: 
-              - committee
-              - member
+      - $ref: './NenOasFragments.json#/parameters/correlationId'
+      - name: topic
+        in: path
+        required: true
+        schema:
+          $ref: '../CDM/cloudEvents.json#/definitions/committeeTopic'
+      - name: subscriptionId
+        in: query
+        required: true
+        schema:
+          $ref: '../CDM/cloudEvents.json#/definitions/handle'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              description: the integration platform will publish an event conform 'https://github.com/cloudevents/spec/blob/main/cloudevents/formats/cloudevents.json' to the specified topic
-              type: object
-              additionalProperties: false
-              properties:
-                refId:
-                  oneOf:
-                    - $ref: '../CDM/NenIdentifiers.json#/definitions/nenCommitteeId'
-                    - $ref: '../CDM/NenIdentifiers.json#/definitions/memberId'
-              required:
-                - refId
+              $ref: '#/components/schemas/refId'
       responses:
         '202':
           $ref: './NenOasFragments.json#/responses/202'
@@ -134,21 +129,174 @@ paths:
         '504':
           $ref: './NenOasFragments.json#/responses/504'
       security:
-        - apiKey: []
-        - clientCredentials:
-          - 'event:post'
-        - mutualTLS: []
+      - clientCredentials:
+        - committee:publish
+    get:
+      description: List of events for a topic
+      operationId: listEvents
+      tags:
+      - Event
+      parameters:
+      - $ref: './NenOasFragments.json#/parameters/correlationId'
+      - name: topic
+        in: path
+        required: true
+        schema:
+          $ref: '../CDM/cloudEvents.json#/definitions/committeeTopic'
+      responses:
+        '200':
+          description: List of events for the topic
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/headers/correlationId'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    eventId:
+                      $ref: '../CDM/cloudEvents.json#/properties/id'
+                    refId:
+                      $ref: '#/components/schemas/refId'
+          links:
+            getEvent:
+              $ref: './NenOasFragments.json#/links/events'
+      security:
+      - clientCredentials:
+        - committee:publish
+        - committee:subscribe
+  /events/{topic}/{eventId}:
+    get:
+      summary: Retrieve CloudEvents over HTTP
+      # Note: for future use only. Current SAP does not publish events. Consumers are polling for updates instead.
+      description: Get a specific CloudEvents from a topic.
+      operationId: getEvent
+      tags:
+      - Event
+      parameters:
+      - $ref: './NenOasFragments.json#/parameters/correlationId'
+      - name: topic
+        in: path
+        required: true
+        schema:
+          $ref: '../CDM/cloudEvents.json#/definitions/committeeTopic'
+      - name: subscriptionId
+        in: query
+        required: true
+        schema:
+          $ref: '../CDM/cloudEvents.json#/definitions/handle'
+      - name: eventId
+        in: path
+        required: true
+        schema:
+          $ref: '../CDM/cloudEvents.json#/definitions/iddef'
+      responses:
+        '200':
+          description: Event retrieved successfully
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/headers/correlationId'
+          content:
+            application/json:
+              schema:
+                $ref: '../CDM/cloudEvents.json#'
+        '400':
+          $ref: './NenOasFragments.json#/responses/400'
+        '401':
+          $ref: './NenOasFragments.json#/responses/401'
+        '403':
+          $ref: './NenOasFragments.json#/responses/403'
+        '404':
+          description: Event not found for the given topic and eventId
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/headers/correlationId'
+        '500':
+          $ref: './NenOasFragments.json#/responses/500'
+        '503':
+          $ref: './NenOasFragments.json#/responses/503'
+        '504':
+          $ref: './NenOasFragments.json#/responses/504'
+      security:
+      - clientCredentials:
+        - committee:publish
+        - committee:subscribe
+  /eventSubscriptions:
+    description: Manage CloudEvents subscriptions for Committee events. Subscriptions are used to receive updates on changes to committee and member data via the eventing system, as an alternative to polling for updates via the REST API.
+    summary: Create, retrieve, and manage CloudEvents subscriptions 
+    parameters:
+    - $ref: './NenOasFragments.json#/parameters/correlationId'
+    get:
+      operationId: getSubscriptions
+      description: Retrieve list of subscriptions for the given topic
+      tags: 
+      - Subscription
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/parameters/correlationId'
+          content:
+            application/json:
+              schema:
+                $ref: '../CDM/cloudEvents.json#/definitions/subscriptionList'
+          links:
+            getEvents:
+              $ref: './NenOasFragments.json#/links/eventList'
+            postEvents :
+              $ref: './NenOasFragments.json#/links/postEvents'
+        <<: *standardGetResponses
+      security:
+      - clientCredentials:
+        - committee:admin
+    post:
+      operationId: createSubscription
+      description: Create a subscription
+      parameters:
+        - $ref: './NenOasFragments.json#/parameters/correlationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../CDM/cloudEvents.json#/definitions/subscriptionRequest'
+      tags:
+      - Subscription
+      responses:
+        "201":
+          description: Created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '../CDM/cloudEvents.json#/definitions/subscription'
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/headers/correlationId'
+        "400":
+          $ref: './NenOasFragments.json#/responses/400'
+        "401":
+          $ref: './NenOasFragments.json#/responses/401'
+        "403":
+          $ref: './NenOasFragments.json#/responses/403'
+      security:
+      - clientCredentials:
+        - committee:publish
+        - committee:subscribe
   /committees:
     get:
       description: List of committees, filtered by query parameters, sorted by updatedAt (oldest first)
       operationId: listCommittees
       summary: List of committees
       tags:
-        - Committee
+      - Committee
       parameters:
-        - $ref: './NenOasFragments.json#/parameters/fromDate'
-        - $ref: './NenOasFragments.json#/parameters/maxNumberOfItems'
-        - $ref: './NenOasFragments.json#/parameters/correlationId'
+      - $ref: './NenOasFragments.json#/parameters/fromDate'
+      - $ref: './NenOasFragments.json#/parameters/maxNumberOfItems'
+      - $ref: './NenOasFragments.json#/parameters/correlationId'
       responses:
         '200':
           description: Committee list
@@ -181,22 +329,25 @@ paths:
             X-Next:
               $ref: './NenOasFragments.json#/headers/next'
         <<: *standardGetResponses
+      security:
+      - clientCredentials:
+        - committee:read      
   /committees/{committeeId}:
     get:
       description: Retrieve NEN committee with details if its eTag value has changed or if no eTag value is given
       operationId: getCommitteeById
       tags:
-        - Committee
+      - Committee
       summary: Retrieve committee by Id
       parameters:
-        - name: committeeId
-          in: path
-          required: true
-          schema:
-            $ref: '../CDM/NenIdentifiers.json#/definitions/nenCommitteeId'
-          description: Unique ID of the NEN committee
-        - $ref: './NenOasFragments.json#/parameters/correlationId'
-        - $ref: './NenOasFragments.json#/parameters/ifChanged'
+      - name: committeeId
+        in: path
+        required: true
+        schema:
+          $ref: '../CDM/NenIdentifiers.json#/definitions/nenCommitteeId'
+        description: Unique ID of the NEN committee
+      - $ref: './NenOasFragments.json#/parameters/correlationId'
+      - $ref: './NenOasFragments.json#/parameters/ifChanged'
       responses:
         '200':
           description: Committee details
@@ -215,30 +366,33 @@ paths:
             ETag:
               $ref: './NenOasFragments.json#/headers/eTag'
         <<: *standardGetWithEtagResponses
+      security:
+      - clientCredentials:
+        - committee:read      
   /members:
     get:
       description: List of committee members, filtered by query parameters, sorted by updatedAt (oldest first)
       operationId: listMembers
       summary: List of committee members
       tags:
-        - Member
+      - Member
       parameters:
-        - name: committeeId
-          in: query
-          description: Filter memberList for a specific committee
-          required: false
-          schema:
-            $ref: '../CDM/NenIdentifiers.json#/definitions/nenCommitteeId'
-        - name: nenOnly
-          in: query
-          description: filter condition to get only NEN employees when yes
-          required: false
+      - name: committeeId
+        in: query
+        description: Filter memberList for a specific committee
+        required: false
+        schema:
+          $ref: '../CDM/NenIdentifiers.json#/definitions/nenCommitteeId'
+      - name: nenOnly
+        in: query
+        description: filter condition to get only NEN employees when yes
+        required: false
 #          default: false
-          schema:
-            type: boolean
-        - $ref: './NenOasFragments.json#/parameters/fromDate'
-        - $ref: './NenOasFragments.json#/parameters/maxNumberOfItems'
-        - $ref: './NenOasFragments.json#/parameters/correlationId'
+        schema:
+          type: boolean
+      - $ref: './NenOasFragments.json#/parameters/fromDate'
+      - $ref: './NenOasFragments.json#/parameters/maxNumberOfItems'
+      - $ref: './NenOasFragments.json#/parameters/correlationId'
       responses:
         '200':
           description: Member list
@@ -271,22 +425,25 @@ paths:
             X-Next:
               $ref: './NenOasFragments.json#/headers/next'
         <<: *standardGetResponses
+      security:
+      - clientCredentials:
+        - committee:read      
   /members/{memberId}:
     get:
       description: Retrieve committee member with details if its eTag value has changed or if no eTag value is given
       operationId: getMemberById
       tags:
-        - Member
+      - Member
       summary: Retrieve member by Id
       parameters:
-        - name: memberId
-          in: path
-          required: true
-          schema:
-            $ref: '../CDM/NenIdentifiers.json#/definitions/memberId'
-          description: Unique ID of the NEN committee member
-        - $ref: './NenOasFragments.json#/parameters/correlationId'
-        - $ref: './NenOasFragments.json#/parameters/ifChanged'
+      - name: memberId
+        in: path
+        required: true
+        schema:
+          $ref: '../CDM/NenIdentifiers.json#/definitions/memberId'
+        description: Unique ID of the NEN committee member
+      - $ref: './NenOasFragments.json#/parameters/correlationId'
+      - $ref: './NenOasFragments.json#/parameters/ifChanged'
       responses:
         '200':
           description: Member details
@@ -300,6 +457,9 @@ paths:
             ETag:
               $ref: './NenOasFragments.json#/headers/eTag'
         <<: *standardGetWithEtagResponses
+      security:
+      - clientCredentials:
+        - committee:read      
 servers:
   - url: https://api.{stage}nen.nl/apis/committee/v1
     description: This API gets published in multiple environments for different stages of development. Note that naming is provisional, please update with final domain and hostname
@@ -307,6 +467,7 @@ servers:
       stage:
         default: .
         description: a descriptor for the target environment, such as tst. acc. and demo.
+  - url: https://localhost:5672/activemq
 components:
   schemas:
     committeeList:
@@ -332,13 +493,25 @@ components:
             type: boolean
           updatedAt:
             $ref: '../CDM/NenFamily_V0.9.0.json#/properties/updatedAt'
+    refId:
+      oneOf:
+      - $ref: '../CDM/NenIdentifiers.json#/definitions/nenCommitteeId'
+      - $ref: '../CDM/NenIdentifiers.json#/definitions/memberId'
+      - $ref: '../CDM/NenIdentifiers.json#/definitions/clientId'
   securitySchemes:
 #   $comment: 'security is yet to be decided. To be updated later.'
     clientCredentials:
-      $ref: './NenOasFragments.json#/securitySchemes/clientCredentials'
-    bearerAuth:
-      $ref: './NenOasFragments.json#/securitySchemes/jwtBearer'
-    apiKey:
-      $ref: './NenOasFragments.json#/securitySchemes/apiKey'
-    mutualTLS:
-      $ref: './NenOasFragments.json#/securitySchemes/mutualTLS'
+#      $ref: './NenOasFragments.json#/securitySchemes/app2AppOauth'
+#     somehow the same as app2AppOauth in NenOasFragments, but scopes don't work (according to Spectral) when referencing it, so defined here again with the correct scopes for this API
+      type: oauth2
+      description: OAuth2 client credentials flow for server-to-server communication
+      flows:
+        clientCredentials:
+          tokenUrl: https://auth.example.com/token
+          refreshUrl: https://auth.example.com/token
+          scopes:
+            monitor: Monitor the service health
+            committee:read: Read access to committee info
+            committee:publish: Publish committee messages to the broker
+            committee:subscribe: Receive committee messages from the broker
+            committee:admin: Administer committee topics and subscriptions

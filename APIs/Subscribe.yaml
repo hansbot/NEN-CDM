@@ -1,0 +1,56 @@
+asyncapi: 3.0.0
+info:
+  title: Event Topic Subscription API (ActiveMQ)
+  version: 1.0.0
+  description: Service subscribing to updates sent to the {Topic}Channel via ActiveMQ broker.
+  contact: 
+    name: Nen Delft
+    url: https://www.nen.nl
+    email: info@nen.nl
+  tags:
+    - name: subscribe
+      description: subscribe to an event channel
+  license: 
+    name: CC 4.0
+
+servers:
+  activemq:
+    host: 'localhost:5672' # Default AMQP port for ActiveMQ
+    protocol: amqp
+    protocolVersion: '1.0.0'
+    description: Development ActiveMQ Broker
+
+channels:
+  projectChannel:
+    address: 'project'
+    bindings:
+      amqp:
+        is: queue # Defines this as a queue rather than a routing key
+        queue:
+          name: 'project.updates.queue'
+          durable: true
+    messages:
+      projectUpdated:
+        $ref: '#/components/messages/ProjectUpdate'
+
+operations:
+  receiveProjectUpdates:
+    action: receive
+    channel:
+      $ref: '#/components/channels/projectChannel'
+    summary: Listen for project messages from the ActiveMQ queue.
+
+components:
+  messages:
+    ProjectUpdate:
+      payload:
+        type: object
+        properties:
+          id:
+            type: string
+            format: uuid
+          name:
+            type: string
+          status:
+            type: string
+            enum: [active, archived, completed]

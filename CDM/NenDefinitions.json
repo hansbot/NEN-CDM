@@ -483,7 +483,7 @@
       "minLength": 2,
       "maxLength": 64,
       "description": "Organisation involved in the creation of the standard text.",
-      "pattern": "^[A-Z/ ]+$",
+      "pattern": "^[A-Z/- ]+$",
       "examples": [
         "NEN", "ISO", "IEC", "CEN", "CENELEC", "API", "ASME", "ASTM", "BSI", "DIN", "IEEE", "UL", "ETSI"
       ]
@@ -517,7 +517,7 @@
         "https://example.com/nen-release-items/0012345.pdf", "releaseitems.example.com/library/0012345.pdf", "ftp://example.com/nen-release-items/0012345.pdf"
       ],
       "maxLength": 2048,
-      "pattern": "^(https?|ftp):\/\/[^ \/$.?#].[^ ]*$"
+      "pattern": "^(https?|ftp|amqp):\/\/[^ \/$.?#].[^ ]*$"
     }
   }
 }

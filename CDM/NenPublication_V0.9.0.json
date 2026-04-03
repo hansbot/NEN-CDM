@@ -26,6 +26,10 @@
     "nenCompatibilityId": {
       "$ref": "./NenIdentifiers.json#/definitions/nenCompatibilityId"
     },
+    "nenProductCategory": {
+      "description": "Product category for the NEN publication is used to determine the price for customers.",
+      "$comment": "oral info from michel vriese - to be confirmed. Presumably, this will become a 'reference' Id / 'link' to a product schema to be defined in the future."
+    },
     "nenLanguage": {
       "description": "Primary language of the NEN publication, represented as an ISO 639-1 code (e.g., 'en' for English, 'nl' for Dutch).",
       "type": "string",

@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
-  title: NEN Content Domain API
-  version: 0.9.0
+  title: NEN Publication API - to access the norms managed by NEN
+  version: 0.9.1
   description: |
     API to access the standards managed by NEN: Standards Family > Standards Projects > Standards Publications > Resource Items
     Audience: clients continually updating a shadow library of standards content.
@@ -10,20 +10,22 @@ info:
     email: ServicedeskITRegie@nen.nl
     url: 'https://www.nen.nl/contact-nl'
 tags:
-  - name: Family
-    description: Collection and item resource for Standard Families
-  - name: FamilyAdmin
-    description: Collection and item resource for Standard FamilyAdmins
-  - name: Project
-    description: Collection and item resource for Standard Projects
-  - name: Publication
-    description: Collection and item resource for Standard Publications
-  - name: ReleaseItem
-    description: Collection and item resource for Standard Resource Items
-  - name: Healthcheck
-    description: to verify if the service is up and running healthily
-  - name: Event
-    description: to publish an event to a topic
+- name: Family
+  description: Collection and item resource for Standard Families
+- name: FamilyAdmin
+  description: Collection and item resource for Standard FamilyAdmins
+- name: Project
+  description: Collection and item resource for Standard Projects
+- name: Publication
+  description: Collection and item resource for Standard Publications
+- name: ReleaseItem
+  description: Collection and item resource for Standard Resource Items
+- name: Healthcheck
+  description: to verify if the service is up and running healthily
+- name: Event
+  description: to publish an event to a topic
+- name: Subscription
+  description: to manage subscriptions for event topics
 # Define the anchors once (before referencing them)
 x-default-responses:
   getItem: &standardGetWithEtagResponses
@@ -86,48 +88,33 @@ paths:
                 $ref: './NenOasFragments.json#/schemas/healthStatus'
         <<: *standardGetResponses
       security:
-#       $comment: 'security is yet to be decided. To be updated later.'
-        - apiKey: []
-        - clientCredentials: []
-        - mutualTLS: []
+      - clientCredentials:
+        - monitor
   /events/{topic}:
     post:
-      summary: Ontvangst van een CloudEvent via HTTP
-      description: Publiceert een CloudEvent naar het eventing-systeem.
+      summary: restful endpoint for publishing a CloudEvent via HTTP
+      description: Publishes a CloudEvent to the broker channel.
       operationId: postEvent
       tags:
         - Event
       parameters:
-        - $ref: './NenOasFragments.json#/parameters/correlationId'
-        - name: topic
-          in: path
-          required: true
-          schema:
-            type: string
-            enum: 
-              - family
-              - familyAdmin
-              - project
-              - publication
-              - releaseItem
+      - $ref: './NenOasFragments.json#/parameters/correlationId'
+      - name: topic
+        in: path
+        required: true
+        schema:
+          $ref: '../CDM/cloudEvents.json#/definitions/publicationTopic'
+      - name: subscriptionId
+        in: query
+        required: true
+        schema:
+          $ref: '../CDM/cloudEvents.json#/definitions/handle'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              description: the integration platform will publish an event conform 'https://github.com/cloudevents/spec/blob/main/cloudevents/formats/cloudevents.json' to the specified topic
-              type: object
-              additionalProperties: false
-              properties:
-                refId:
-                  oneOf:
-                    - $ref: '../CDM/NenIdentifiers.json#/definitions/nenFamilyId'
-                    - $ref: '../CDM/NenIdentifiers.json#/definitions/nenFamilyAdminId'
-                    - $ref: '../CDM/NenIdentifiers.json#/definitions/nenProjectId'
-                    - $ref: '../CDM/NenIdentifiers.json#/definitions/nenPublicationId'
-                    - $ref: '../CDM/NenIdentifiers.json#/definitions/releaseItemId'
-              required:
-                - refId
+              $ref: '#/components/schemas/refId'
       responses:
         '202':
           $ref: './NenOasFragments.json#/responses/202'
@@ -144,10 +131,162 @@ paths:
         '504':
           $ref: './NenOasFragments.json#/responses/504'
       security:
-        - apiKey: []
-        - clientCredentials:
-          - 'event:post'
-        - mutualTLS: []
+      - clientCredentials:
+        - norm:publish
+    get:
+      description: List of events for a topic
+      operationId: listEvents
+      tags:
+      - Event
+      parameters:
+      - $ref: './NenOasFragments.json#/parameters/correlationId'
+      - name: topic
+        in: path
+        required: true
+        schema:
+          $ref: '../CDM/cloudEvents.json#/definitions/publicationTopic'
+      responses:
+        '200':
+          description: List of events for the topic
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/headers/correlationId'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    eventId:
+                      $ref: '../CDM/cloudEvents.json#/properties/id'
+                    refId:
+                      $ref: '#/components/schemas/refId'
+          links:
+            getEvent:
+              $ref: './NenOasFragments.json#/links/events'
+      security:
+      - clientCredentials:
+        - norm:publish
+        - norm:subscribe
+  /events/{topic}/{eventId}:
+    get:
+      summary: Retrieve CloudEvent over HTTP
+      description: Get a specific CloudEvents from a topic.
+      operationId: getEvent
+      tags:
+      - Event
+      parameters:
+      - $ref: './NenOasFragments.json#/parameters/correlationId'
+      - name: topic
+        in: path
+        required: true
+        schema:
+          $ref: '../CDM/cloudEvents.json#/definitions/publicationTopic'
+      - name: subscriptionId
+        in: query
+        required: true
+        schema:
+          $ref: '../CDM/cloudEvents.json#/definitions/handle'
+      - name: eventId
+        in: path
+        required: true
+        schema:
+          $ref: '../CDM/cloudEvents.json#/definitions/iddef'
+      responses:
+        '200':
+          description: Event retrieved successfully
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/headers/correlationId'
+          content:
+            application/json:
+              schema:
+                $ref: '../CDM/cloudEvents.json#'
+        '400':
+          $ref: './NenOasFragments.json#/responses/400'
+        '401':
+          $ref: './NenOasFragments.json#/responses/401'
+        '403':
+          $ref: './NenOasFragments.json#/responses/403'
+        '404':
+          description: Event not found for the given topic and eventId
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/headers/correlationId'
+        '500':
+          $ref: './NenOasFragments.json#/responses/500'
+        '503':
+          $ref: './NenOasFragments.json#/responses/503'
+        '504':
+          $ref: './NenOasFragments.json#/responses/504'
+      security:
+      - clientCredentials:
+        - norm:publish
+        - norm:subscribe
+  /eventsSubscriptions:
+    description: Manage CloudEvents subscriptions for Publication events. Subscriptions are used to receive updates on changes to publication data via the eventing system, as an alternative to polling for updates via the REST API.
+    summary: Create, retrieve, and manage CloudEvents subscriptions 
+    parameters:
+    - $ref: './NenOasFragments.json#/parameters/correlationId'
+    get:
+      operationId: getSubscriptions
+      description: Retrieve list of subscriptions
+      tags: 
+      - Subscription
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/parameters/correlationId'
+          content:
+            application/json:
+              schema:
+                $ref: '../CDM/cloudEvents.json#/definitions/subscriptionList'
+          links:
+            getEvents:
+              $ref: './NenOasFragments.json#/links/eventList'
+            postEvents :
+              $ref: './NenOasFragments.json#/links/postEvents'
+        <<: *standardGetResponses
+      security:
+      - clientCredentials:
+        - norm:admin
+    post:
+      operationId: createSubscription
+      description: Create a subscription
+      tags:
+      - Subscription
+      parameters:
+        - $ref: './NenOasFragments.json#/parameters/correlationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../CDM/cloudEvents.json#/definitions/subscriptionRequest'
+      responses:
+        "201":
+          description: Created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '../CDM/cloudEvents.json#/definitions/subscription'
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/headers/correlationId'
+        "400":
+          $ref: './NenOasFragments.json#/responses/400'
+        "401":
+          $ref: './NenOasFragments.json#/responses/401'
+        "403":
+          $ref: './NenOasFragments.json#/responses/403'
+      security:
+      - clientCredentials:
+        - norm:publish
+        - norm:subscribe
   /families:
     get:
       description: List of families, filtered by query parameters, sorted by updatedAt (oldest first)
@@ -191,10 +330,8 @@ paths:
         - url: https://example.com/poolparty/familyAPI
           description: provisional specification for the endpoint in the source system. Please update with final values
       security:
-#       $comment: 'security is yet to be decided. To be updated later.'
-        - apiKey: []
-        - clientCredentials: []
-        - mutualTLS: []
+        - clientCredentials:
+          - norm:read
   /families/{familyId}:
     get:
       description: Retrieve NEN family with details if its eTag value has changed or if no eTag value is given
@@ -237,10 +374,8 @@ paths:
         - url: https://example.com/poolparty/familyAPI
           description: provisional specification for the endpoint in the source system. Please update with final values
       security:
-#       $comment: 'security is yet to be decided. To be updated later.'
-        - apiKey: []
-        - clientCredentials: []
-        - mutualTLS: []
+        - clientCredentials:
+          - norm:read
   /familyAdmins:
     get:
       description: List of familieAdmins, filtered by query parameters, sorted by updatedAt (oldest first)
@@ -289,10 +424,8 @@ paths:
         - url: https://example.com/poolparty/familyAdminAPI
           description: provisional specification for the endpoint in the source system. Please update with final values
       security:
-#       $comment: 'security is yet to be decided. To be updated later.'
-        - apiKey: []
-        - clientCredentials: []
-        - mutualTLS: []
+        - clientCredentials:
+          - norm:read
   /familyAdmins/{familyAdminId}:
     get:
       description: Retrieve NEN familyAdmin with details if its eTag value has changed or if no eTag value is given
@@ -339,10 +472,8 @@ paths:
         - url: https://example.com/poolparty/familyAdminAPI
           description: provisional specification for the endpoint in the source system. Please update with final values
       security:
-#       $comment: 'security is yet to be decided. To be updated later.'
-        - apiKey: []
-        - clientCredentials: []
-        - mutualTLS: []
+        - clientCredentials:
+          - norm:read
   /projects:
     get:
       description: List of projects, filtered by query parameters, sorted by updatedAt (oldest first)
@@ -396,10 +527,8 @@ paths:
         - url: https://example.com/sitefusion/projectAPI
           description: provisional specification for the endpoint in the source system. Please update with final values
       security:
-#       $comment: 'security is yet to be decided. To be updated later.'
-        - apiKey: []
-        - clientCredentials: []
-        - mutualTLS: []
+        - clientCredentials:
+          - norm:read
   /projects/{projectId}:
     get:
       description: Retrieve NEN project with details if its eTag value has changed or if no eTag value is given
@@ -446,10 +575,8 @@ paths:
         - url: https://example.com/sitefusion/projectAPI
           description: provisional specification for the endpoint in the source system. Please update with final values
       security:
-#       $comment: 'security is yet to be decided. To be updated later.'
-        - apiKey: []
-        - clientCredentials: []
-        - mutualTLS: []
+        - clientCredentials:
+          - norm:read
   /publications:
     get:
       description: List of publications, filtered by query parameters, sorted by sorted by updatedAt (oldest first)
@@ -508,10 +635,8 @@ paths:
         - url: https://example.com/sitefusion/publicationAPI
           description: provisional specification for the endpoint in the source system. Please update with final values
       security:
-#       $comment: 'security is yet to be decided. To be updated later.'
-        - apiKey: []
-        - clientCredentials: []
-        - mutualTLS: []
+        - clientCredentials:
+          - norm:read
   /publications/{publicationId}:
     get:
       description: Retrieve NEN publication with details if its eTag value has changed or if no eTag value is given
@@ -554,10 +679,8 @@ paths:
         - url: https://example.com/sitefusion/publicationAPI
           description: provisional specification for the endpoint in the source system. Please update with final values
       security:
-#       $comment: 'security is yet to be decided. To be updated later.'
-        - apiKey: []
-        - clientCredentials: []
-        - mutualTLS: []
+        - clientCredentials:
+          - norm:read
   /releaseItems:
     get:
       description: List of release items, filtered by query parameters, sorted by sorted by updatedAt (oldest first)
@@ -621,10 +744,8 @@ paths:
         - url: https://example.com/sitefusion/releaseItemAPI
           description: provisional specification for the endpoint in the source system. Please update with final values
       security:
-#       $comment: 'security is yet to be decided. To be updated later.'
-        - apiKey: []
-        - clientCredentials: []
-        - mutualTLS: []
+        - clientCredentials:
+          - norm:read
   /releaseItems/{contentRefId}:
     get:
       description: Retrieve NEN release item with details if its eTag value has changed or if no eTag value is given
@@ -663,10 +784,8 @@ paths:
         - url: https://example.com/sitefusion/releaseItemAPI
           description: provisional specification for the endpoint in the source system. Please update with final values
       security:
-#       $comment: 'security is yet to be decided. Tony strongly preferes OAuth:CC. To be updated later.'
-        - apiKey: []
-        - clientCredentials: []
-        - mutualTLS: []
+        - clientCredentials:
+          - norm:read
 servers:
   - url: https://api.{stage}nen.nl/apis/norms/v1
     description: This API gets published in multiple environments for different stages of development. Note that naming is provisional, please update with final domain and hostname
@@ -676,6 +795,13 @@ servers:
         description: a descriptor for the target environment, such as tst. acc. and demo.
 components:
   schemas:
+    refId:
+      oneOf:
+        - $ref: '../CDM/NenIdentifiers.json#/definitions/nenFamilyId'
+        - $ref: '../CDM/NenIdentifiers.json#/definitions/nenFamilyAdminId'
+        - $ref: '../CDM/NenIdentifiers.json#/definitions/nenProjectId'
+        - $ref: '../CDM/NenIdentifiers.json#/definitions/nenPublicationId'
+        - $ref: '../CDM/NenIdentifiers.json#/definitions/releaseItemId' 
     familyList:
       type: array
       items:
@@ -804,10 +930,17 @@ components:
   securitySchemes:
 #   $comment: 'security is yet to be decided. To be updated later.'
     clientCredentials:
-      $ref: './NenOasFragments.json#/securitySchemes/clientCredentials'
-    bearerAuth:
-      $ref: './NenOasFragments.json#/securitySchemes/jwtBearer'
-    apiKey:
-      $ref: './NenOasFragments.json#/securitySchemes/apiKey'
-    mutualTLS:
-      $ref: './NenOasFragments.json#/securitySchemes/mutualTLS'
+#      $ref: './NenOasFragments.json#/securitySchemes/app2AppOauth'
+#     somehow the same as app2AppOauth in NenOasFragments, but scopes don't work (according to Spectral) when referencing it, so defined here again with the correct scopes for this API
+      type: oauth2
+      description: OAuth2 client credentials flow for server-to-server communication
+      flows:
+        clientCredentials:
+          tokenUrl: https://auth.example.com/token
+          refreshUrl: https://auth.example.com/token
+          scopes:
+            monitor: Monitor the service health
+            norm:read: Read access to publication info
+            norm:publish: Publish publication messages to the broker
+            norm:subscribe: Receive publication messages from the broker
+            norm:admin: Administer publication topics and subscriptions

@@ -1,0 +1,97 @@
+asyncapi: 3.0.0
+info:
+  title: Event Topic Publishing and Subscription API (ActiveMQ)
+  version: 0.1.0
+  description: Service publishing events and subscribing to events sent to the {Topic}Channel via ActiveMQ broker.
+  contact: 
+    name: NEN Servicedesk IT
+    email: ServicedeskITRegie@nen.nl
+    url: 'https://www.nen.nl/contact-nl'
+  tags:
+    - name: subscribe
+      description: subscribe to an event channel
+    - name: publish
+      description: publish an event to a channel
+  license: 
+    name: CC 4.0
+
+servers:
+  activemq:
+    host: 'localhost:5672' # Default AMQP port for ActiveMQ
+    protocol: amqp
+    protocolVersion: '1.0.0'
+    description: Development ActiveMQ Broker
+
+channels:
+  nenChannel:
+    address: '{nenChannel}'
+    parameters:
+      nenChannel:
+        $ref: '../CDM/cloudEvents.json#/schemas/committeeTopic' # Reference to the committeeTopics definition in the JSON schema
+    bindings:
+      amqp:
+        is: queue # Defines this as a queue rather than a routing key
+        queue:
+          name: '{channel}.topic'
+          durable: true
+    messages:
+      projectUpdated:
+        $ref: '#/components/messages/ProjectUpdate'
+operations:
+  publish:
+    action: send
+    description: Publish an event to the requested ActiveMQ channel.
+    channel:
+      $ref: '#/channels/variableChannel'
+    summary: Publish events to the ActiveMQ queue.
+  subscribe:
+    action: receive
+    description: Subscribe to events from the requested ActiveMQ channel.
+    channel:
+      $ref: '#/channels/variableChannel'
+    summary: Listen for events from the ActiveMQ queue.
+
+components:
+  messages:
+    ProjectUpdate:
+      payload:
+        type: object
+        properties:
+          id:
+            type: string
+            format: uuid
+          name:
+            type: string
+          status:
+            type: string
+            enum: [active, archived, completed]
+    parameters:
+      channel:
+        description: The topic name for the events, e.g., 'project'.
+        location: path
+        schema:
+          type: string
+          enum: [project, publication, family, familyAdmin, releaseItem]
+    schemas:
+      EventBody:
+        type: object
+        properties:
+          eventType:
+            type: string
+          data:
+            type: object
+    securitySchemes:
+    clientCredentials:
+      description: OAuth client credentials flow
+      type: oauth2
+      in: header
+      flows:
+        clientCredentials:
+#          "$comment": "url to be validated",
+          tokenUrl: https://api.nen.nl/authenticate
+          availableScopes:
+            committeeTopics:publish: Publish committee messages to the broker
+            committeeTopics:subscribe: Receive committee messages from the broker
+            publicationTopics:publish: Publish publication messages to the broker
+            publicationTopics:subscribe: Receive publication messages from the broker
+
