@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema#",
+  "description": "Customer schema. This schema is intended to represent customers in a general way, and can be referenced by other schemas such as CommitteeMember or ProjectContact.",
+  "title": "Cannonical Schema for Customer",
+  "version": "0.1.0",
+  "$comment": "Last modified on 2026-04-08 by Hans Bot - NEN. Please note that this schema is still in early development and may undergo significant changes. The contact person schema is designed to be flexible and adaptable to various use cases, and may be extended with additional properties as needed.",
+  "type": "object",
+  "definitions": {
+    "customerId": {
+      "$ref": "./NenIdentifiers.json#/definitions/clientId"
+    },
+    "name": {
+      "type": "string",
+      "description": "The name of the customer organization.",
+      "examples": [
+        "Acme Corporation", "Globex Inc.", "Soylent Corp.", "Initech LLC"
+      ]
+    },
+    "leiCode": {
+      "type": "string",
+      "description": "Legal Entity Identifier (LEI) code for the customer organization, as defined in ISO 17442.",
+      "$comment": "Reference https://www.gleif.org/en/about/this-is-gleif",
+      "examples": [
+        "5493001KJTIIGC8Y1R12", "213800G2XH9QZP4QWZ30"
+      ]
+    },
+    "vLeiCode": {
+      "type": "string",
+      "description": "Validation LEI code for the customer organization, used for verifying the authenticity of the LEI code, , as defined in ISO 17442-3.",
+      "examples": [
+        "5493001KJTIIGC8Y1R12-20240401", "213800G2XH9QZP4QWZ30-20240315"
+      ]
+    },
+    "companyRegistrationNumber": {
+      "type": "string",
+      "description": "The official registration number of the company, such as a Chamber of Commerce number.",
+      "examples": [
+        "12345678", "987654321"
+      ]
+    },
+    "adresses": {
+      "type": "array",
+      "description": "A list of addresses associated with the contact person.",
+      "items": {
+        "$ref": "./NenDefinitions.json#/definitions/address"
+      }
+    },
+    "branche": {
+      "type": "string",
+      "description": "The industry or sector that the customer organization operates in.",
+      "examples": [
+        "Manufacturing", "Technology", "Healthcare", "Finance", "Bouw", "Energie", "Transport", "Retail", "Agriculture", "Overheid", "Onderwijs", "Zorg", "Non-profit", "Other"
+      ]
+    },
+    "department": {
+      "type": "string",
+      "description": "The specific department within the customer organization that is relevant to the context, such as 'Research and Development', 'Procurement', 'Quality Assurance', etc.",
+      "maxLength": 128
+    },
+    "emails": {
+      "type": "array",
+      "description": "A qualified list of email addresses associated with the organization.",
+      "items": {
+        "$ref": "./NenDefinitions.json#/definitions/email"
+      }
+    },
+    "phoneNumbers": {
+      "type": "array",
+      "description": "A qualified list of telephone numbers associated with the organization.",
+      "items": {
+        "$ref": "./NenDefinitions.json#/definitions/phone"
+      }
+    },
+    "legalForm": {
+      "type": "string",
+      "description": "The legal form of the customer organization, such as 'B.V.', 'N.V.', 'LLC', 'GmbH', etc.",
+      "examples": [
+        "B.V.", "N.V.", "LLC", "GmbH", "Eenmanszaak", "Stichting", "Vereniging", "Coöperatie", "Overheid", "Maatschap", "Zorginstelling", "Onderwijsinstelling", "Non-profit", "Other"
+      ]
+    },
+    "vatId": {
+      "type": "string",
+      "description": "The VAT identification number of the customer organization, used for tax purposes.",
+      "examples": [
+        "NL123456789B01", "DE987654321"
+      ]
+    },
+    "website": {
+      "description": "The official website URL of the customer organization.",
+      "$ref": "./NenDefinitions.json#/definitions/url"
+    },
+    "references": {
+      "contacts": {
+        "type": "array",
+        "description": "A list of contact persons associated with the customer.",
+        "items": {
+          "$ref": "./NenIdentifiers.json#/definitions/nenContactId"
+        }
+      },
+      "contracts": {
+        "type": "array",
+        "description": "A list of contracts associated with the customer.",
+        "items": {
+          "$ref": "./NenIdentifiers.json#/definitions/nenContractId"
+        }
+      },
+      "partOf": {
+        "type": "array",
+        "description": "A list of parent organizations that the customer is part of.",
+        "items": {
+          "$ref": "./NenIdentifiers.json#/definitions/clientId"
+        }
+      },
+      "hasPart": {
+        "type": "array",
+        "description": "A list of child organizations that are part of the customer.",
+        "items": {
+          "$ref": "./NenIdentifiers.json#/definitions/clientId"
+        }
+      },
+      "nenLiaison": {
+        "$ref": "./NenIdentifiers.json#/definitions/nenEmployeeId"
+      }
+    }
+  }
+}

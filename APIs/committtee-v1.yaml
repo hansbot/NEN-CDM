@@ -15,7 +15,7 @@ tags:
 - name: Event
   description: to publish updates on the state of a resource
 - name: Subscription
-  description: to manage subscriptions for event topics
+  description: to manage subscriptions for event channels
 - name: Committee
   description: Committee resource
 - name: Member
@@ -63,7 +63,6 @@ x-default-responses:
 paths:
   /health:
     get:
-#      $ref: './getHealth.yaml#'
       description: |
         Check the status of the service. Returns UP or DOWN with the time of the check.
         $comment: to be discussed what health is being checked; the gateway health, or of all the services 'behind' the gateway
@@ -87,7 +86,7 @@ paths:
       security:
       - clientCredentials:
         - monitor
-  /events/{topic}:
+  /events/{channel}:
     post:
       summary: restful endpoint for publishing a CloudEvent via HTTP
       # Note: for future use only. Current SAP does not publish events. Consumers are polling for updates instead.
@@ -97,11 +96,11 @@ paths:
       - Event
       parameters:
       - $ref: './NenOasFragments.json#/parameters/correlationId'
-      - name: topic
+      - name: channel
         in: path
         required: true
         schema:
-          $ref: '../CDM/cloudEvents.json#/definitions/committeeTopic'
+          $ref: '../CDM/cloudEvents.json#/committeeChannel'
       - name: subscriptionId
         in: query
         required: true
@@ -132,20 +131,20 @@ paths:
       - clientCredentials:
         - committee:publish
     get:
-      description: List of events for a topic
+      description: List of events for a channel
       operationId: listEvents
       tags:
       - Event
       parameters:
       - $ref: './NenOasFragments.json#/parameters/correlationId'
-      - name: topic
+      - name: channel
         in: path
         required: true
         schema:
-          $ref: '../CDM/cloudEvents.json#/definitions/committeeTopic'
+          $ref: '../CDM/cloudEvents.json#/definitions/committeeChannel'
       responses:
         '200':
-          description: List of events for the topic
+          description: List of events for the channel
           headers:
             X-Correlation-Id:
               $ref: './NenOasFragments.json#/headers/correlationId'
@@ -168,26 +167,18 @@ paths:
       - clientCredentials:
         - committee:publish
         - committee:subscribe
-  /events/{topic}/{eventId}:
+  /events/{channel}/{eventId}:
     get:
       summary: Retrieve CloudEvents over HTTP
       # Note: for future use only. Current SAP does not publish events. Consumers are polling for updates instead.
-      description: Get a specific CloudEvents from a topic.
+      description: Get a specific CloudEvents from a channel.
       operationId: getEvent
       tags:
       - Event
       parameters:
       - $ref: './NenOasFragments.json#/parameters/correlationId'
-      - name: topic
-        in: path
-        required: true
-        schema:
-          $ref: '../CDM/cloudEvents.json#/definitions/committeeTopic'
-      - name: subscriptionId
-        in: query
-        required: true
-        schema:
-          $ref: '../CDM/cloudEvents.json#/definitions/handle'
+      - $ref: '#/components/parameters/channel'
+      - $ref: '#/components/parameters/subscriptionId'
       - name: eventId
         in: path
         required: true
@@ -210,7 +201,7 @@ paths:
         '403':
           $ref: './NenOasFragments.json#/responses/403'
         '404':
-          description: Event not found for the given topic and eventId
+          description: Event not found for the given channel and eventId
           headers:
             X-Correlation-Id:
               $ref: './NenOasFragments.json#/headers/correlationId'
@@ -224,35 +215,7 @@ paths:
       - clientCredentials:
         - committee:publish
         - committee:subscribe
-  /eventSubscriptions:
-    description: Manage CloudEvents subscriptions for Committee events. Subscriptions are used to receive updates on changes to committee and member data via the eventing system, as an alternative to polling for updates via the REST API.
-    summary: Create, retrieve, and manage CloudEvents subscriptions 
-    parameters:
-    - $ref: './NenOasFragments.json#/parameters/correlationId'
-    get:
-      operationId: getSubscriptions
-      description: Retrieve list of subscriptions for the given topic
-      tags: 
-      - Subscription
-      responses:
-        "200":
-          description: OK
-          headers:
-            X-Correlation-Id:
-              $ref: './NenOasFragments.json#/parameters/correlationId'
-          content:
-            application/json:
-              schema:
-                $ref: '../CDM/cloudEvents.json#/definitions/subscriptionList'
-          links:
-            getEvents:
-              $ref: './NenOasFragments.json#/links/eventList'
-            postEvents :
-              $ref: './NenOasFragments.json#/links/postEvents'
-        <<: *standardGetResponses
-      security:
-      - clientCredentials:
-        - committee:admin
+  /subscriptions:
     post:
       operationId: createSubscription
       description: Create a subscription
@@ -286,6 +249,53 @@ paths:
       - clientCredentials:
         - committee:publish
         - committee:subscribe
+  /subscriptions/{channel}:
+    description: Manage CloudEvents subscriptions for Committee events. Subscriptions are used to receive updates on changes to committee and member data via the eventing system, as an alternative to polling for updates via the REST API.
+    summary: Create, retrieve, and manage CloudEvents subscriptions 
+    parameters:
+    - $ref: './NenOasFragments.json#/parameters/correlationId'
+    - $ref: '#/components/parameters/channel'
+    get:
+      operationId: getSubscriptions
+      description: Retrieve list of subscriptions for the given channel
+      tags: 
+      - Subscription
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/parameters/correlationId'
+          content:
+            application/json:
+              schema:
+                $ref: '../CDM/cloudEvents.json#/definitions/subscriptionList'
+          links:
+            getEvents:
+              $ref: './NenOasFragments.json#/links/eventList'
+            postEvents :
+              $ref: './NenOasFragments.json#/links/postEvents'
+        <<: *standardGetResponses
+      security:
+      - clientCredentials:
+        - committee:admin
+    delete:
+      operationId: endSubscription
+      description: Unsubscribe from the given channel
+      tags: 
+      - Subscription
+      parameters:
+        - $ref: '#/components/parameters/subscriptionId'
+      responses:
+        "204":
+          description: No Content
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/parameters/correlationId'
+        "400":
+          $ref: './NenOasFragments.json#/responses/400'
+        "404":
+          $ref: './NenOasFragments.json#/responses/404'
   /committees:
     get:
       description: List of committees, filtered by query parameters, sorted by updatedAt (oldest first)
@@ -387,7 +397,7 @@ paths:
         in: query
         description: filter condition to get only NEN employees when yes
         required: false
-#          default: false
+      # default: false
         schema:
           type: boolean
       - $ref: './NenOasFragments.json#/parameters/fromDate'
@@ -469,6 +479,18 @@ servers:
         description: a descriptor for the target environment, such as tst. acc. and demo.
   - url: https://localhost:5672/activemq
 components:
+  parameters:
+    channel:
+      in: path
+      required: true
+      schema:
+        $ref: '../CDM/cloudEvents.json#/definitions/committeeChannel'
+    subscriptionId:
+      name: subscriptionId
+      in: query
+      required: true
+      schema:
+        $ref: '../CDM/cloudEvents.json#/definitions/handle'
   schemas:
     committeeList:
       type: array
@@ -499,10 +521,10 @@ components:
       - $ref: '../CDM/NenIdentifiers.json#/definitions/memberId'
       - $ref: '../CDM/NenIdentifiers.json#/definitions/clientId'
   securitySchemes:
-#   $comment: 'security is yet to be decided. To be updated later.'
+    # $comment: 'security is yet to be decided. To be updated later.'
     clientCredentials:
-#      $ref: './NenOasFragments.json#/securitySchemes/app2AppOauth'
-#     somehow the same as app2AppOauth in NenOasFragments, but scopes don't work (according to Spectral) when referencing it, so defined here again with the correct scopes for this API
+      # $ref: './NenOasFragments.json#/securitySchemes/app2AppOauth'
+      # somehow the same as app2AppOauth in NenOasFragments, but scopes don't work (according to Spectral) when referencing it, so defined here again with the correct scopes for this API
       type: oauth2
       description: OAuth2 client credentials flow for server-to-server communication
       flows:
@@ -510,8 +532,8 @@ components:
           tokenUrl: https://auth.example.com/token
           refreshUrl: https://auth.example.com/token
           scopes:
-            monitor: Monitor the service health
+            monitor: Monitor the service hhelth
             committee:read: Read access to committee info
             committee:publish: Publish committee messages to the broker
             committee:subscribe: Receive committee messages from the broker
-            committee:admin: Administer committee topics and subscriptions
+            committee:admin: Administer committee cahnnels and subscriptions

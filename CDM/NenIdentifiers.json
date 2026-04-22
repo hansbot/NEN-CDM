@@ -19,6 +19,13 @@
         748219, 23984
       ]
     },
+    "nenContactId": {
+      "description": "Unique identifier for the contact person, consisting of numeric characters.",
+      "type": "integer",
+      "examples": [
+        748219, 23984
+      ]
+    },
     "nenCommitteeId": {
       "type": "integer",
       "description": "Unique identifier for the committee, typically in the format 'organization:committee:uniqueId'.",

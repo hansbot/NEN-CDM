@@ -95,7 +95,7 @@
                 "description": "employeeNumber."
             },
             "employee": {
-                "$ref": "./NenDefinitions.json#/definitions/person"
+                "$ref": "./Person-V1.json#/definitions"
             }
         }
     },

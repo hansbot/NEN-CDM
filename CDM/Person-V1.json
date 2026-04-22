@@ -1,0 +1,112 @@
+
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema#",
+  "description": "Customer schema. This schema is intended to represent customers in a general way, and can be referenced by other schemas such as CommitteeMember or ProjectContact.",
+  "title": "Cannonical Schema for general person information",
+  "version": "0.1.0",
+  "$comment": "Last modified on 2026-04-08 by Hans Bot - NEN. To be referenced from identified entities, such as contact person, employee, committee member, etc.",
+  "type": "object",
+  "definitions": {
+    "initials": {
+        "description": "The initials of the person, if applicable.",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 12,
+        "examples": [
+            "H.A.F.M.O"
+        ],
+        "pattern": "^[A-Z.]+$"
+        },
+    "lastName": {
+        "description": "The last name or surname of the person.",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128,
+        "examples": [
+            "Rooijakkers", "Kenters"
+        ]
+    },
+    "firstName": {
+        "description": "The first name of the person.",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 32,
+        "examples": [
+            "Elisabeth", "Nikki"
+        ]
+    },
+    "middleName": {
+        "description": "The middle name of the person.",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 32,
+        "examples": [
+            "van der", "dos", "de"
+        ]
+    },
+    "givenName": {
+        "description": "The given name of the person.",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 32,
+        "examples": [
+            "Els", "Nikki"
+        ]
+    },
+    "gender": {
+        "description": "M = Male, F = Female, X = Other, N = Unknown",
+        "type": "string",
+        "enum": ["M", "F", "X", "N"],
+        "default": "N",
+        "examples": [
+            "F"
+        ]
+    }, 
+    "salutation": {
+        "description": "Salutation, optional, used for gender identification such as Ms, Mr.",
+        "type": "string",
+        "minLength": 0,
+        "maxLength": 12,
+        "examples": [
+            "Ms", "Dhr", "Zkh"
+        ]
+    },
+    "academicTitle": {
+        "description": "Title of person, used for academic, corporations or military titles, etc. Dr. Eng., MD, BSc, etc.",
+        "$comment": "In SAP: 'academische titel'",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 32,
+        "examples": [
+            "Dr. Eng.", "MD", "BSc"
+        ]
+    },
+    "emails": {
+        "type": "array",
+        "description": "A list of email addresses associated with the person.",
+        "items": {
+            "$ref": "./NenDefinitions.json#/definitions/email"
+        }
+    },
+    "phoneNumbers": {
+        "type": "array",
+        "description": "A list of telephone numbers associated with the person.",
+        "items": {
+            "$ref": "./NenDefinitions.json#/definitions/phone"
+        }
+    },
+    "dateOfBirth": {
+        "$comment": "in SAP 'geboortedatum'",
+        "$ref": "./NenDefinitions.json#/definitions/isoCalendarDate"
+        },
+        "preferedLanguage": {
+        "description": "Language of preference for communication purposes",
+        "$ref": "./NenDefinitions.json#/definitions/isoLanguageCode-1"
+        }
+  },
+  "additionalProperties": false,
+  "oneOf": [
+    {"required": ["lastName", "initials"]},
+    {"required": ["lastName", "firstName"]}
+  ]
+}

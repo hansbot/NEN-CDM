@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema#",
+  "description": "Contact person schema. (in dutch: relatie). This schema is intended to represent contact persons in a general way, and can be referenced by other schemas such as CommitteeMember or ProjectContact.",
+  "title": "Cannonical Schema for Contact Person",
+  "version": "0.1.0",
+  "$comment": "Last modified on 2026-04-08 by Hans Bot - NEN. Please note that this schema is still in early development and may undergo significant changes. The contact person schema is designed to be flexible and adaptable to various use cases, and may be extended with additional properties as needed.",
+  "type": "object",
+  "definitions": {
+    "contactId": {
+      "$ref": "./NenIdentifiers.json#/definitions/nenContactId"
+    },
+    "person": {
+      "$ref": "./Person-V1.json#/definitions"
+    },
+    "adresses": {
+      "type": "array",
+      "description": "A list of addresses associated with the contact person.",
+      "items": {
+        "$ref": "./NenDefinitions.json#/definitions/address"
+      }
+    },
+    "profession": {
+    "type": "string",
+    "description": "Profession or job title of the contact person",
+    "$comment": "in SAP 'beroep'"
+    },
+    "relationship": {
+      "type": "string",
+      "description": "The relationship of the contact person to the organization or project, such as 'customer', 'external consultant', 'committee member', etc.",
+      "enum": [
+        "signatory", "business contact", "business partner", "external consultant", "committee member", "project contact", "acquirer", "legal representative", "other"
+      ]
+    },
+    "references": {
+      "clientId": {
+        "$ref": "./NenIdentifiers.json#/definitions/clientId"
+      }
+    }
+  } 
+}

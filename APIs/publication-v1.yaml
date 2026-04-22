@@ -23,9 +23,9 @@ tags:
 - name: Healthcheck
   description: to verify if the service is up and running healthily
 - name: Event
-  description: to publish an event to a topic
+  description: to publish an event to a channel
 - name: Subscription
-  description: to manage subscriptions for event topics
+  description: to manage subscriptions for event channels
 # Define the anchors once (before referencing them)
 x-default-responses:
   getItem: &standardGetWithEtagResponses
@@ -90,7 +90,7 @@ paths:
       security:
       - clientCredentials:
         - monitor
-  /events/{topic}:
+  /events/{channel}:
     post:
       summary: restful endpoint for publishing a CloudEvent via HTTP
       description: Publishes a CloudEvent to the broker channel.
@@ -99,14 +99,12 @@ paths:
         - Event
       parameters:
       - $ref: './NenOasFragments.json#/parameters/correlationId'
-      - name: topic
+      - name: channel
         in: path
         required: true
         schema:
-          $ref: '../CDM/cloudEvents.json#/definitions/publicationTopic'
-      - name: subscriptionId
-        in: query
-        required: true
+          $ref: '../CDM/cloudEvents.json#/definitions/publicationChannel'
+      - $ref: '#components/parameters/subscriptionId'
         schema:
           $ref: '../CDM/cloudEvents.json#/definitions/handle'
       requestBody:
@@ -134,20 +132,20 @@ paths:
       - clientCredentials:
         - norm:publish
     get:
-      description: List of events for a topic
+      description: List of events for a channel
       operationId: listEvents
       tags:
       - Event
       parameters:
       - $ref: './NenOasFragments.json#/parameters/correlationId'
-      - name: topic
+      - name: channel
         in: path
         required: true
         schema:
-          $ref: '../CDM/cloudEvents.json#/definitions/publicationTopic'
+          $ref: '../CDM/cloudEvents.json#/definitions/publicationChannel'
       responses:
         '200':
-          description: List of events for the topic
+          description: List of events for the channel
           headers:
             X-Correlation-Id:
               $ref: './NenOasFragments.json#/headers/correlationId'
@@ -170,25 +168,21 @@ paths:
       - clientCredentials:
         - norm:publish
         - norm:subscribe
-  /events/{topic}/{eventId}:
+  /events/{channel}/{eventId}:
     get:
       summary: Retrieve CloudEvent over HTTP
-      description: Get a specific CloudEvents from a topic.
+      description: Get a specific CloudEvents from a channel.
       operationId: getEvent
       tags:
       - Event
       parameters:
       - $ref: './NenOasFragments.json#/parameters/correlationId'
-      - name: topic
+      - name: channel
         in: path
         required: true
         schema:
-          $ref: '../CDM/cloudEvents.json#/definitions/publicationTopic'
-      - name: subscriptionId
-        in: query
-        required: true
-        schema:
-          $ref: '../CDM/cloudEvents.json#/definitions/handle'
+          $ref: '../CDM/cloudEvents.json#/definitions/publicationChannel'
+      - $ref: '#/components/parameters/subscriptionId'
       - name: eventId
         in: path
         required: true
@@ -211,7 +205,7 @@ paths:
         '403':
           $ref: './NenOasFragments.json#/responses/403'
         '404':
-          description: Event not found for the given topic and eventId
+          description: Event not found for the given channel and eventId
           headers:
             X-Correlation-Id:
               $ref: './NenOasFragments.json#/headers/correlationId'
@@ -225,35 +219,11 @@ paths:
       - clientCredentials:
         - norm:publish
         - norm:subscribe
-  /eventsSubscriptions:
+  /subscriptions:
     description: Manage CloudEvents subscriptions for Publication events. Subscriptions are used to receive updates on changes to publication data via the eventing system, as an alternative to polling for updates via the REST API.
-    summary: Create, retrieve, and manage CloudEvents subscriptions 
+    summary: Create CloudEvents subscriptions 
     parameters:
     - $ref: './NenOasFragments.json#/parameters/correlationId'
-    get:
-      operationId: getSubscriptions
-      description: Retrieve list of subscriptions
-      tags: 
-      - Subscription
-      responses:
-        "200":
-          description: OK
-          headers:
-            X-Correlation-Id:
-              $ref: './NenOasFragments.json#/parameters/correlationId'
-          content:
-            application/json:
-              schema:
-                $ref: '../CDM/cloudEvents.json#/definitions/subscriptionList'
-          links:
-            getEvents:
-              $ref: './NenOasFragments.json#/links/eventList'
-            postEvents :
-              $ref: './NenOasFragments.json#/links/postEvents'
-        <<: *standardGetResponses
-      security:
-      - clientCredentials:
-        - norm:admin
     post:
       operationId: createSubscription
       description: Create a subscription
@@ -287,7 +257,57 @@ paths:
       - clientCredentials:
         - norm:publish
         - norm:subscribe
-  /families:
+  /subscriptions/{channel}:
+    description: Manage CloudEvents subscriptions for Committee events. Subscriptions are used to receive updates on changes to committee and member data via the eventing system, as an alternative to polling for updates via the REST API.
+    summary: Create and Terminate CloudEvents subscriptions 
+    parameters:
+    - $ref: './NenOasFragments.json#/parameters/correlationId'
+    - $ref: '#/components/parameters/channel'
+    get:
+      operationId: getSubscriptions
+      description: Retrieve list of subscriptions for the given channel
+      tags: 
+      - Subscription
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/parameters/correlationId'
+          content:
+            application/json:
+              schema:
+                $ref: '../CDM/cloudEvents.json#/definitions/subscriptionList'
+          links:
+            getEvents:
+              $ref: './NenOasFragments.json#/links/eventList'
+            postEvents :
+              $ref: './NenOasFragments.json#/links/postEvents'
+        <<: *standardGetResponses
+      security:
+      - clientCredentials:
+        - committee:admin
+    delete:
+      operationId: endSubscription
+      description: Unsubscribe from the given channel
+      tags: 
+      - Subscription
+      parameters:
+        - $ref: '#/components/parameters/subscriptionId'
+      responses:
+        "204":
+          description: No Content
+          headers:
+            X-Correlation-Id:
+              $ref: './NenOasFragments.json#/parameters/correlationId'
+        "400":
+          $ref: './NenOasFragments.json#/responses/400'
+        "404":
+          $ref: './NenOasFragments.json#/responses/404'
+      security:
+      - clientCredentials:
+        - committee:admin
+/families:
     get:
       description: List of families, filtered by query parameters, sorted by updatedAt (oldest first)
       operationId: listFamilies
@@ -659,7 +679,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '../CDM/NenProject_V0.9.0.json#'
+                $ref: '../CDM/NenPublication_V0.9.0.json#'
           links:
             getProject:
               operationId: getProjectById
@@ -668,7 +688,7 @@ paths:
             getReleaseItems:
               operationId: getReleaseItemById
               parameters:
-                familyAdminId: "$response.body#/references/nenReleaseItems/nenContentRefId"
+                releaeItemId: "$response.body#/references/nenReleaseItems/nenContentRefId"
           headers:
             X-Correlation-Id:
               $ref: './NenOasFragments.json#/headers/correlationId'
@@ -873,6 +893,18 @@ components:
           updatedAt:
             $ref: '../CDM/NenReleaseItem_V0.9.0.json#/properties/updatedAt'
   parameters:
+    channel:
+      name: channel
+      in: path
+      required: true
+      schema:
+        $ref: '../CDM/cloudEvents.json#/definitions/publicationChannel'
+    subscriptionId:
+      name: subscriptionId
+      in: query
+      required: true
+      schema:
+        $ref: '../CDM/cloudEvents.json#/definitions/handle'
     familyFilter:
       name: family
       in: query
@@ -928,12 +960,9 @@ components:
         contentRefId: "$response.body#/nenContentRefId"
         description: forEach item in the list, getReleaseItemById
   securitySchemes:
-#   $comment: 'security is yet to be decided. To be updated later.'
-    clientCredentials:
-#      $ref: './NenOasFragments.json#/securitySchemes/app2AppOauth'
-#     somehow the same as app2AppOauth in NenOasFragments, but scopes don't work (according to Spectral) when referencing it, so defined here again with the correct scopes for this API
       type: oauth2
       description: OAuth2 client credentials flow for server-to-server communication
+      # somehow the same as app2AppOauth in NenOasFragments, but scopes don't work (according to Spectral) when referencing it, so defined here again with the correct scopes for this API
       flows:
         clientCredentials:
           tokenUrl: https://auth.example.com/token
@@ -943,4 +972,4 @@ components:
             norm:read: Read access to publication info
             norm:publish: Publish publication messages to the broker
             norm:subscribe: Receive publication messages from the broker
-            norm:admin: Administer publication topics and subscriptions
+            norm:admin: Administer publication channels and subscriptions

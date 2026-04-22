@@ -236,6 +236,12 @@
       "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
       "description": "A date and time in ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ)."
     },
+    "isoCountryCode": {
+      "type": "string",
+      "description": "A standard ISO 3166-1 alpha-2 country code.",
+      "examples": ["NL", "BE", "DE", "FR"],
+      "pattern": "^[A-Z]{2}$"
+    },
     "isoLanguageCode-1": {
       "type": "string",
       "description": "A standard ISO 639-1 language code.",
@@ -278,99 +284,109 @@
         "nl:nen:pub:NEN-7510"
       ]
     },
-    "person": {
-      "initials": {
-        "description": "The initials of the person, if applicable.",
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 12,
-        "examples": [
-          "H.A.F.M.O"
-        ],
-        "pattern": "^[A-Z.]+$"
-      },
-      "lastName": {
-        "description": "The last name or surname of the person.",
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 128,
-        "examples": [
-          "Rooijakkers", "Kenters"
-        ]
-      },
-      "firstName": {
-        "description": "The first name of the person.",
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 32,
-        "examples": [
-          "Elisabeth", "Nikki"
-        ]
-      },
-      "givenName": {
-        "description": "The given name of the person.",
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 32,
-        "examples": [
-          "Els", "Nikki"
-        ]
-      },
-      "gender": {
-        "description": "M = Male, F = Female, X = Other, N = Unknown",
-        "type": "string",
-        "enum": ["M", "F", "X", "N"],
-        "default": "N",
-        "examples": [
-          "F"
-        ]
-      }, 
-      "salutation": {
-        "description": "Salutation, optional, used for gender identification such as Ms, Mr.",
-        "type": "string",
-        "minLength": 0,
-        "maxLength": 12,
-        "examples": [
-          "Ms", "Dhr", "Zkh"
-        ]
-      },
-      "academicTitle": {
-        "description": "Title of person, used for academic, corporations or military titles, etc. Dr. Eng., MD, BSc, etc.",
-        "$comment": "In SAP: 'academische titel'",
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 32,
-        "examples": [
-          "Dr. Eng.", "MD", "BSc"
-        ]
-      },
-      "emailAddress": {
-        "description": "The email address of the person, used for communication purposes.",
-        "$comment": "conform harmonized identities: personalEmail",
-        "$ref": "#/definitions/emailAddress"
-      },
-      "telephoneNumber": {
-        "description": "The telephone number of the person, used for communication purposes.",
-        "$ref": "#/definitions/telephoneNumber"
-      },
-      "dateOfBirth": {
-        "$comment": "in SAP 'geboortedatum'",
-        "$ref": "#/definitions/isoCalendarDate"
-      },
-      "profession": {
-        "type": "string",
-        "description": "Profession or job title of the person",
-        "$comment": "in SAP 'beroep'"
-      },
-      "preferedLanguage": {
-        "description": "Language of preference for communication purposes",
-        "$ref": "#/definitions/isoLanguageCode-1"
+    "email": {
+      "description": "The email address of the relation, used for communication purposes.",
+      "$comment": "conform harmonized identities: personalEmail",
+      "$type": "object",
+      "properties": {
+        "type": {
+          "description": "The type of email address, such as 'personal', 'work', 'other'.",
+          "type": "string",
+          "enum": [
+            "personal", "work", "general", "team", "official", "other"
+          ],
+          "default": "work"
+        },
+        "emailAddress": {
+          "description": "The email address of the person, used for communication purposes.",
+          "$comment": "conform harmonized identities: personalEmail",
+          "$ref": "#/definitions/emailAddress"
+        },
+        "isValidated": {
+          "description": "Indicates whether the email address has been validated.",
+          "type": "boolean",
+          "default": false
+        }
       },
       "additionalProperties": false,
-      "oneOf": [
-        {"required": ["lastName", "initials"]},
-        {"required": ["lastName", "firstName"]}
-      ]
+      "required": ["emailAddress"]
+    },
+    "phone": {
+      "description": "The telephone number of the relation, used for communication purposes.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "The type of telephone number, such as 'personal', 'work', 'other'.",
+          "type": "string",
+          "enum": [
+            "personal", "work", "general", "mobile", "fax", "other"
+          ],
+          "default": "work"
+        },
+        "number": {
+          "description": "The telephone number of the person, used for communication purposes.",
+          "$ref": "#/definitions/telephoneNumber"
+        },
+        "isValidated": {
+          "description": "Indicates whether the telephone number has been validated.",
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "additionalProperties": false,
+      "required": ["number"]
+    },
+    "address": {
+      "kind": {
+        "type": "string",
+        "description": "The kind of address, such as 'home', 'work', 'postal', etc.",
+        "enum": [
+          "home", "work", "postal", "main", "billing", "shipping", "other"
+        ]
+      },
+      "street": {
+        "type": "string",
+        "description": "Street name and number.",
+        "examples": [
+          "Dorpsstraat 123", "Postbus 456", "123 Main St", "Laan der Verenigde Naties 13b"
+        ],
+        "maxLength": 64
+      },
+      "location": {
+        "type": "string",
+        "description": "Additional location information, such as building, floor, etc.",
+        "examples": [
+          "Building A, Floor 3", "Apartment 4B"
+        ],
+        "maxLength": 64
+      },
+      "postalCode": {
+        "type": "string",
+        "description": "Postal code.",
+        "examples": [
+          "1234 AB", "70210", "CF10 1EP", "V6B 6G1", "20095", "560001"
+        ],
+        "pattern": "^[A-Z0-9]+ ?[A-Z0-9]+|[0-9]+$",
+        "maxLength": 9
+      },
+      "city": {
+        "type": "string",
+        "description": "City or town.",
+        "examples": [
+          "Delft"
+        ]
+      },
+      "region": {
+        "type": "string",
+        "description": "Region, state, or province.",
+        "examples": [
+          "Zuid-Holland", "California", "Île-de-France", "Nordrhein-Westfalen"
+        ],
+        "maxLength": 32
+      },
+      "country": {
+        "$ref": "#/definitions/isoCountryCode"
+      }
     },
     "publicationURN": {
       "oneOf": [

@@ -60,10 +60,7 @@
     },
     "time": {
       "description": "Timestamp of when the occurrence happened. Must adhere to RFC 3339.",
-      "$ref": "#/definitions/timedef",
-      "examples": [
-        "2018-04-05T17:31:00Z"
-      ]
+      "$ref": "#/definitions/timedef"
     },
     "data": {
       "description": "The event payload.",
@@ -80,7 +77,7 @@
       ]
     }
   },
-  "required": ["id", "source", "specversion", "type"] ,
+  "required": ["id", "source", "specversion"],
   "definitions": {
     "iddef": {
       "type": "string",
@@ -116,7 +113,10 @@
     "timedef": {
       "type": ["string", "null"],
       "format": "date-time",
-      "minLength": 1
+      "examples": [
+        "2018-04-05T17:31:00Z", "2026-02-28T14:30:00Z", "2028-02-29T23:59:59Z"],
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+      "$comment": "The pattern enforces the use of UTC time (indicated by the 'Z' suffix) and excludes fractional seconds for simplicity. This ensures that all timestamps are standardized and easily comparable across different systems."
     },
     "datadef": {
         "$comment": "check what kind of data goes in here, and if we can be more specific about the type",
@@ -126,28 +126,28 @@
       "type": ["string", "null"],
       "contentEncoding": "base64"
     },
-    "nenTopic": {
+    "nenChannle": {
       "description": "Topics for NEN events, used to categorize the type of event and its relevance to subscribers.",
       "anyOf": [
-        { "$ref": "#/definitions/committeeTopic" },
-        { "$ref": "#/definitions/publicationTopic" }
+        { "$ref": "#/definitions/committeeChannel" },
+        { "$ref": "#/definitions/publicationChannel" }
       ]
     },
-    "publicationTopic": {
+    "publicationChannel": {
       "type": "string",
       "enum": [
-        "family",
-        "familyAdmin",
-        "project",
-        "publication",
-        "releaseItem"
+        "nen.content.family",
+        "nen.content.familyAdmin",
+        "nen.content.project",
+        "nen.content.publication",
+        "nen.content.releaseItem"
       ]
     },
-    "committeeTopic": {
+    "committeeChannel": {
       "type": "string",
       "enum": [
-        "committee",
-        "member"
+        "nen.administration.committee",
+        "nen.administration.member"
       ]
     },
     "subscriptionRequest": {
