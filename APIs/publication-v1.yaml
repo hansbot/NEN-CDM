@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: NEN Publication API - to access the norms managed by NEN
-  version: 0.9.1
+  version: 0.9.2
   description: |
     API to access the standards managed by NEN: Standards Family > Standards Projects > Standards Publications > Resource Items
     Audience: clients continually updating a shadow library of standards content.
@@ -99,14 +99,8 @@ paths:
         - Event
       parameters:
       - $ref: './NenOasFragments.json#/parameters/correlationId'
-      - name: channel
-        in: path
-        required: true
-        schema:
-          $ref: '../CDM/cloudEvents.json#/definitions/publicationChannel'
-      - $ref: '#components/parameters/subscriptionId'
-        schema:
-          $ref: '../CDM/cloudEvents.json#/definitions/handle'
+      - $ref: '#/components/parameters/channel'
+      - $ref: '#/components/parameters/subscriptionId'
       requestBody:
         required: true
         content:
@@ -307,7 +301,7 @@ paths:
       security:
       - clientCredentials:
         - committee:admin
-/families:
+  /families:
     get:
       description: List of families, filtered by query parameters, sorted by updatedAt (oldest first)
       operationId: listFamilies
@@ -960,6 +954,7 @@ components:
         contentRefId: "$response.body#/nenContentRefId"
         description: forEach item in the list, getReleaseItemById
   securitySchemes:
+    clientCredentials:
       type: oauth2
       description: OAuth2 client credentials flow for server-to-server communication
       # somehow the same as app2AppOauth in NenOasFragments, but scopes don't work (according to Spectral) when referencing it, so defined here again with the correct scopes for this API

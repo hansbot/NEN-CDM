@@ -8,7 +8,7 @@ info:
     name: NEN Servicedesk IT
     email: ServicedeskITRegie@nen.nl
     url: 'https://www.nen.nl/contact-nl'
-  version: 1.1.1
+  version: 1.1.2
 tags:
 - name: Healthcheck
   description: to verify if the service is up and running healthily
@@ -100,7 +100,7 @@ paths:
         in: path
         required: true
         schema:
-          $ref: '../CDM/cloudEvents.json#/committeeChannel'
+          $ref: '../CDM/cloudEvents.json#/definitions/committeeChannel'
       - name: subscriptionId
         in: query
         required: true
@@ -481,6 +481,7 @@ servers:
 components:
   parameters:
     channel:
+      name: channel
       in: path
       required: true
       schema:
