@@ -2,8 +2,8 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema#",
   "description": "Schema for NEN Project details.",
   "title": "NenProject Canonical Schema",
-  "version": "0.9.0",
-  "$comment": "Last modified on 2026-03-19 by Hans Bot - NEN. Derived from 'NEN Content Publication V0.8.1-bundled.yaml'. Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/135495682/NenProjects",
+  "version": "0.9.1",
+  "$comment": "Last modified on 2026-04-23 by Hans Bot - NEN. Replaced 'isoLanguageCode' with 'language' for internal consistency. Derived from 'NEN Content Publication V0.8.1-bundled.yaml'. Internal reference: https://nendelft.atlassian.net/wiki/spaces/Normenbank/pages/135495682/NenProjects",
   "type": "object",
   "properties": {
     "nenProjectId": {
@@ -80,7 +80,7 @@
       "items": {
         "type": "object",
         "properties": {
-          "isoLanguageCode": {
+          "language": {
             "$ref": "./NenDefinitions.json#/definitions/isoLanguageCode-1"
           },
           "localTitle": {

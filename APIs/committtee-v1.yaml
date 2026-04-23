@@ -533,8 +533,8 @@ components:
           tokenUrl: https://auth.example.com/token
           refreshUrl: https://auth.example.com/token
           scopes:
-            monitor: Monitor the service hhelth
+            monitor: Monitor the service health
+            committee:admin: Administer committee channels and subscriptions
             committee:read: Read access to committee info
             committee:publish: Publish committee messages to the broker
             committee:subscribe: Receive committee messages from the broker
-            committee:admin: Administer committee cahnnels and subscriptions

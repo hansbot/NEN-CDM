@@ -280,7 +280,7 @@ paths:
         <<: *standardGetResponses
       security:
       - clientCredentials:
-        - committee:admin
+        - norm:admin
     delete:
       operationId: endSubscription
       description: Unsubscribe from the given channel
@@ -300,7 +300,7 @@ paths:
           $ref: './NenOasFragments.json#/responses/404'
       security:
       - clientCredentials:
-        - committee:admin
+        - norm:admin
   /families:
     get:
       description: List of families, filtered by query parameters, sorted by updatedAt (oldest first)
